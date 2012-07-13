@@ -4,7 +4,7 @@
 import pygame
 from pygame.locals import *
 from operator import add, sub, mul, div
-from math import hypot, atan2, degrees
+from math import hypot, atan2, degrees, ceil
 
 WIDTH, HEIGHT = 1280, 720 # damn projector
 SCALE = 32
@@ -56,7 +56,7 @@ class Sprite(pygame.sprite.Sprite):
 		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
 
 class Tower(Sprite):
-	range = 64
+	range = 100
 	interval = 16
 	time_since_last_fire = 0
 	cost = 150
@@ -74,10 +74,12 @@ class Tower(Sprite):
 					closest_enemy = e
 					closest_dist = dist
 			if closest_dist <= self.range:
-				self.fire(closest_enemy)
-	def fire(self, enemy):
+				self.fire(closest_enemy, closest_dist)
+	def fire(self, enemy, dist):
 		self.time_since_last_fire = 0
-		projectiles.add(Carrot(self._pos[0], self._pos[1], enemy._pos))
+		dist = ceil(dist / SCALE * 0.95)
+		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
+		projectiles.add(Carrot(self._pos[0], self._pos[1], epos))
 
 class Chainsaw(Sprite):
 	pathy = True
