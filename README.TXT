@@ -1,3 +1,3 @@
 Carrot Tower v0.00
-Created by Sanfred & drougge for NÃ¶rdtroXy II
+Created by Sanfred & drougge for NördtroXy II
 Copywrong 2012
