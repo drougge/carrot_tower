@@ -5,6 +5,7 @@ import pygame
 from pygame.locals import *
 from operator import add, sub, mul, div
 from math import hypot, atan2, degrees, ceil
+from time import sleep
 
 WIDTH, HEIGHT = 1280, 720 # damn projector
 SCALE = 32
@@ -140,7 +141,7 @@ def lose_life():
 	print "DEATH!!!"
 	lives -= 1
 	if lives < 1:
-		going = False
+		game_over()
 
 spawned_on_this_level = 0
 def spawn():
@@ -157,6 +158,15 @@ def spawn():
 		spawned_on_this_level = 0
 		spawn_countdown = 600
 
+def game_over():
+	global going
+	font = pygame.font.SysFont("Verdana", 128, True)
+	game_over_render = font.render("GAME OVER", True, (0,0,0))
+	screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
+	pygame.display.flip()
+	sleep(3)
+	going = False
+	
 def main():
 	global background, background0, screen, enemies, towers, projectiles, money, lives, going, level, spawn_countdown
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
