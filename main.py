@@ -32,6 +32,10 @@ class Sprite(pygame.sprite.Sprite):
 		m = [m * oz for m, oz in zip(move1, z)]
 		c = background.get_at(map(int, map(add, self._pos, m)))
 		if c[0] == 255: return True
+	def _setrot(self):
+		move = tuple([cmp(m, 0) for m in self._move])
+		self._rot = {(1, 0): 0, (0, -1): 90, (-1, 0): 180, (0, 1): 270}[move]
+		self.image = self._img[self._rot]
 	def update(self):
 		z = map(div, self.image.get_size(), (2, 2))
 		if self._move:
@@ -42,7 +46,7 @@ class Sprite(pygame.sprite.Sprite):
 					move = self._move[1] * sign, self._move[0] * sign
 					sign = -sign
 				self._move = move
-				self.image = self._img[self._rot]
+				self._setrot()
 			self._pos = map(add, self._pos, self._move)
 		x, y = map(int, self._pos)
 		xz, yz = z
