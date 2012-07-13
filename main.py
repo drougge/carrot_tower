@@ -109,14 +109,17 @@ def build(what_to_build, position):
 		money -= what_to_build.cost
 
 def lose_life():
-	global lives
+	global lives, going
 	print "DEATH!!!"
 	lives -= 1
 	if lives < 1:
-		pygame.quit()
+		going = False
+
+def spawn():
+	enemies.add(Chainsaw(1071, 79, "red", -4, 0))
 
 def main():
-	global background, background0, screen, enemies, towers, projectiles, money, lives
+	global background, background0, screen, enemies, towers, projectiles, money, lives, going
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background0 = pygame.image.load("map1.png").convert_alpha()
@@ -131,8 +134,8 @@ def main():
 	going = True
 	lives = 13
 	money = 1000
-	saw = Chainsaw(1071, 79, "red", -4, 0)
-	enemies = pygame.sprite.RenderClear([saw])
+	spawn_countdown = 0
+	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
 	things = [enemies, towers, projectiles]
@@ -140,6 +143,10 @@ def main():
 	what_to_build = Tower
 	while going and lives > 0:
 		clock.tick(speed)
+		spawn_countdown -= 1
+		if spawn_countdown <= 0:
+			spawn()
+			spawn_countdown = 30
 
 		# Money must be funny
 		font = pygame.font.SysFont("Verdana", 16, True)
