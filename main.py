@@ -7,6 +7,7 @@ from operator import add, sub, mul, div
 from math import hypot, atan2, degrees
 
 WIDTH, HEIGHT = 1280, 720 # damn projector
+SCALE = 32
 speed = 60
 
 collcmp = pygame.sprite.collide_circle_ratio(0.6)
@@ -32,9 +33,9 @@ class Sprite(pygame.sprite.Sprite):
 			self.image = self._img[0]
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
-		m = [m * oz for m, oz in zip(move1, z)]
-		c = background.get_at(map(int, map(add, self._pos, m)))
-		if c[0] == 255: return True
+		m = map(mul, move1, map(add, z, (1, 1)))
+		c = background0.get_at(map(int, map(div, map(add, self._pos, m), (SCALE, SCALE))))
+		return c[0] == 255
 	def _setrot(self):
 		self._rot = int(degrees(atan2(*self._move)) - 90) % 360
 		self.image = self._img[self._rot]
@@ -102,11 +103,11 @@ def build(what_to_build, position):
 		money -= what_to_build.cost
 
 def main():
-	global background, enemies, towers, projectiles, money
+	global background, background0, screen, enemies, towers, projectiles, money
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
-	background = pygame.image.load("map1.png").convert_alpha()
-	background = pygame.transform.scale(background, map(mul, background.get_size(), (32, 32)))
+	background0 = pygame.image.load("map1.png").convert_alpha()
+	background = pygame.transform.scale(background0, map(mul, background0.get_size(), (SCALE, SCALE)))
 	screen.blit(background, (0, 0))
 	panel = pygame.image.load("panel.png").convert_alpha()
 
@@ -117,7 +118,7 @@ def main():
 	going = True
 	lives = 13
 	money = 1000
-	saw = Chainsaw(1100, 79, "red", -4, 0)
+	saw = Chainsaw(1103, 79, "red", -4, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
