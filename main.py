@@ -131,7 +131,7 @@ def main():
 	going = True
 	lives = 13
 	money = 1000
-	saw = Chainsaw(1071, 79, "red", -32, 0)
+	saw = Chainsaw(1071, 79, "red", -4, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
