@@ -163,10 +163,11 @@ spawned_on_this_level = 0
 def spawn():
 	global level, spawned_on_this_level, spawn_countdown
 	spawns = (3, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7)
+	saw_colors = (["red", "blue"] * 30)
 
 	spawned_on_this_level += 1
 	print "spånat: " + str(spawned_on_this_level)
-	enemies.add(Chainsaw(1071, 79, "red", -4, 0))
+	enemies.add(Chainsaw(1071, 79, saw_colors[level], -4, 0))
 
 	if spawned_on_this_level >= spawns[level]:
 		print "OMFG LELVE"
