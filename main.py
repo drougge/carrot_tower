@@ -14,49 +14,48 @@ _images = {}
 def imgload(name):
 	if name not in _images:
 		img = pygame.image.load(name).convert_alpha()
-		_images[name] = dict([(deg, pygame.transform.rotate(img, deg - 90)) for deg in range(0, 360, 45)])
+		_images[name] = dict([(deg, pygame.transform.rotate(img, deg)) for deg in range(0, 360, 45)])
 	return _images[name]
 
-movemap = {(1, 0) : (0, 1),
-           (0, 1) : (-1, 0),
-           (-1, 0): (0, -1),
-           (0, -1): (1, 0),
-          }
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
-	def __init__(self, img, x, y, move=False):
+	def __init__(self, img, x, y, rot, move=False):
 		pygame.sprite.Sprite.__init__(self)
 		self._img = imgload(img)
 		self._pos = (x, y)
 		self._dir = dir
 		self._move = move
-	def _can_move(self, z):
-		m = [cmp(m, 0) * z for m, z in zip(self._move, z)]
-		c = background.get_at(map(add, self._pos, m))
-		return c[0] == 255
+		self._rot = rot
+		self.image = self._img[rot]
+	def _can_move(self, z, move):
+		move1 = [cmp(m, 0) for m in move]
+		m = [m * oz for m, oz in zip(move1, z)]
+		c = background.get_at(map(int, map(add, self._pos, m)))
+		if c[0] == 255: return True
 	def update(self):
 		z = map(div, self.image.get_size(), (2, 2))
 		if self._move:
-			while self.pathy and not self._can_move(z):
-				move1 = [cmp(0, m) for m in self._move]
-				move1 = movemap[tuple(move1)]
-				mz = max(map(abs, self._move))
-				self._move = map(mul, move1, (mz, mz))
-			x, y = self._pos = map(add, self._pos, self._move)
-		else:
-			x, y = self._pos
+			if self.pathy:
+				sign = 1
+				move = self._move
+				while not self._can_move(z, move):
+					move = self._move[1] * sign, self._move[0] * sign
+					sign = -sign
+				self._move = move
+				self.image = self._img[self._rot]
+			self._pos = map(add, self._pos, self._move)
+		x, y = map(int, self._pos)
 		xz, yz = z
 		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
 
 class Tower(Sprite):
 	def __init__(self, x, y):
-		Sprite.__init__(self, "tower.png", x, y)
+		Sprite.__init__(self, "tower.png", x, y, 0)
 
 class Chainsaw(Sprite):
 	pathy = True
-	def __init__(self, x, y, colour, mx, my):
-		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, [mx, my])
-		self.image = self._img[90]
+	def __init__(self, x, y, colour, rot, mx, my):
+		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, rot, [mx, my])
 
 class Carrot(Sprite):
 	def __init__(self, x, y):
@@ -72,7 +71,7 @@ def main():
 	clock = pygame.time.Clock()
 	going = True
 	lives = 13
-	saw = Chainsaw(1100, 60, "red", -1, 0)
+	saw = Chainsaw(1100, 68, "red", 180, -4, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	while going and lives > 0:
 		clock.tick(speed)
