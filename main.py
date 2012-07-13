@@ -72,12 +72,13 @@ def main():
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background = pygame.image.load("map1.png").convert_alpha()
+	background = pygame.transform.scale(background, map(mul, background.get_size(), (32, 32)))
 	screen.blit(background, (0, 0))
 	pygame.display.flip()
 	clock = pygame.time.Clock()
 	going = True
 	lives = 13
-	saw = Chainsaw(1100, 68, "red", -4, 0)
+	saw = Chainsaw(1100, 79, "red", -4, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	while going and lives > 0:
 		clock.tick(speed)
