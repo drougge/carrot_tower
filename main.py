@@ -67,11 +67,10 @@ class Tower(Sprite):
 		Sprite.update(self)
 		self.time_since_last_fire += 1
 		if self.time_since_last_fire >= self.interval:
+			closest_dist = 100000 # Lots!
 			for e in enemies:
 				dist = hypot(*map(sub, self._pos, e._pos))
-				closest_enemy = False
-				closest_dist = False
-				if closest_dist == False or dist < closest_dist:
+				if dist < closest_dist:
 					closest_enemy = e
 					closest_dist = dist
 			if closest_dist <= self.range:
