@@ -79,7 +79,7 @@ class Tower(Sprite):
 		self.time_since_last_fire = 0
 		dist = ceil(dist / SCALE * 0.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
-		projectiles.add(Carrot(self._pos[0], self._pos[1], epos))
+		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
 
 class Chainsaw(Sprite):
 	pathy = True
@@ -95,14 +95,18 @@ class Chainsaw(Sprite):
 
 class Carrot(Sprite):
 	max_speed=8
-	def __init__(self, x, y, target_position):
+	def __init__(self, x, y, target_position, range):
 		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
 		Sprite.__init__(self, "carrot.png", x, y, map(div, posdiff, (s, s)))
+		self._range = range
 
 	def update(self):
 		Sprite.update(self)
+		self._range -= self.max_speed
+		if self._range < 0:
+			projectiles.remove(self)
 
 def build(what_to_build, position):
 	global money
