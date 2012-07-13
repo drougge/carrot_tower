@@ -54,7 +54,8 @@ class Tower(Sprite):
 	interval = 16
 	time_since_last_fire = 0
 	def __init__(self, x, y):
-		Sprite.__init__(self, "tower.png", x, y)
+		Sprite.__init__(self, "saw_red_1.png", x, y)
+		self.image = self._img[90]
 	def update(self):
 		Sprite.update(self)
 		self.time_since_last_fire += 1
@@ -84,7 +85,7 @@ class Carrot(Sprite):
 		Sprite.__init__(self, "carrot.png", x, y)
 
 def main():
-	global background, enemies
+	global background, enemies, towers
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background = pygame.image.load("map1.png").convert_alpha()
@@ -95,6 +96,7 @@ def main():
 	lives = 13
 	saw = Chainsaw(1100, 60, "red", -1, 0)
 	enemies = pygame.sprite.RenderClear([saw])
+	towers = pygame.sprite.RenderClear([])
 	while going and lives > 0:
 		clock.tick(speed)
 		enemies.update()
@@ -106,6 +108,10 @@ def main():
 				going = False
 			elif event.type == KEYDOWN and event.key == K_ESCAPE:
 				going = False
+			elif event.type == MOUSEBUTTONUP:
+				towers.add(Tower(event.pos[0], event.pos[1]))
+		towers.update()
+		towers.draw(screen)
 	pygame.quit()
 
 if __name__ == "__main__":
