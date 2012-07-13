@@ -3,7 +3,8 @@
 
 import pygame
 from pygame.locals import *
-from operator import add, mul, div
+from operator import add, sub, mul, div
+from math import hypot
 
 WIDTH, HEIGHT = 1280, 720 # damn projector
 speed = 60
@@ -49,8 +50,28 @@ class Sprite(pygame.sprite.Sprite):
 		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
 
 class Tower(Sprite):
+	range = 256
+	interval = 16
+	time_since_last_fire = 0
 	def __init__(self, x, y):
 		Sprite.__init__(self, "tower.png", x, y)
+	def update(self):
+		Sprite.update(self)
+		self.time_since_last_fire += 1
+		if self.time_since_last_fire >= self.interval:
+			for e in enemies:
+				dist = hypot(*map(sub, self._pos, e._pos))
+				closest_enemy = False
+				closest_dist = False
+				if closest_dist == False or dist < closest_dist:
+					closest_enemy = e
+					closest_dist = dist
+			if closest_dist <= self.range:
+				self.fire(closest_enemy)
+	def fire(self, enemy):
+		self.time_since_last_fire = 0
+		projectile = Carrot(self._pos[0], self._pos[1], enemy._pos)
+
 
 class Chainsaw(Sprite):
 	pathy = True
@@ -59,11 +80,11 @@ class Chainsaw(Sprite):
 		self.image = self._img[90]
 
 class Carrot(Sprite):
-	def __init__(self, x, y):
+	def __init__(self, x, y, target_position):
 		Sprite.__init__(self, "carrot.png", x, y)
 
 def main():
-	global background
+	global background, enemies
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background = pygame.image.load("map1.png").convert_alpha()
