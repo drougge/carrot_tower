@@ -129,9 +129,12 @@ def main():
 
 		# Money must be funny
 		font = pygame.font.SysFont("Verdana", 16, True)
-		money_render = font.render(str(money), True, (255,255,255))
+		money_render = font.render(str(money), True, (0,0,0))
+		lives_render = font.render(str(lives), True, (0,0,0))
 		screen.blit(panel, (1088, 0))
-		screen.blit(money_render, (1110, 5))
+		screen.blit(money_render, (1280-16-money_render.get_size()[0], 7))
+		screen.blit(lives_render, (1280-16-lives_render.get_size()[0], 35))
+		#screen.blit(lives_render, (1110, 25))
 
 		enemies.update()
 		enemies.draw(screen)
