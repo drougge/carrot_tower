@@ -56,7 +56,7 @@ class Sprite(pygame.sprite.Sprite):
 		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
 
 class Tower(Sprite):
-	range = 256
+	range = 64
 	interval = 16
 	time_since_last_fire = 0
 	cost = 150
