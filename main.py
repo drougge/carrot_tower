@@ -90,7 +90,7 @@ class Carrot(Sprite):
 		posdiff = map(sub, (x, y), target_position)
 		h = hypot(*posdiff)
 		s = h / self.max_speed
-		Sprite.__init__(self, "carrot.png", x, y, map(mul, posdiff, (s, s)))
+		Sprite.__init__(self, "carrot.png", x, y, map(div, posdiff, (s, s)))
 
 	def update(self):
 		Sprite.update(self)
@@ -121,6 +121,7 @@ def main():
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
+	things = [enemies, towers, projectiles]
 
 	what_to_build = Tower
 	while going and lives > 0:
@@ -132,10 +133,12 @@ def main():
 		screen.blit(panel, (1088, 0))
 		screen.blit(money_render, (1110, 5))
 
-		enemies.update()
-		enemies.draw(screen)
+		for thing in things:
+			thing.update()
+			thing.draw(screen)
 		pygame.display.flip()
-		enemies.clear(screen, background)
+		for thing in things:
+			thing.clear(screen, background)
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				going = False
@@ -143,10 +146,6 @@ def main():
 				going = False
 			elif event.type == MOUSEBUTTONUP:
 				build(what_to_build, (event.pos[0], event.pos[1]))
-		towers.update()
-		towers.draw(screen)
-		projectiles.update()
-		projectiles.draw(screen)
 	pygame.quit()
 
 if __name__ == "__main__":
