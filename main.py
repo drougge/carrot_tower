@@ -121,11 +121,23 @@ def lose_life():
 	if lives < 1:
 		going = False
 
+spawned_on_this_level = 0
 def spawn():
+	global level, spawned_on_this_level, spawn_countdown
+	spawns = (3, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7)
+
+	spawned_on_this_level += 1
+	print "spånat: " + str(spawned_on_this_level)
 	enemies.add(Chainsaw(1071, 79, "red", -4, 0))
 
+	if spawned_on_this_level >= spawns[level]:
+		print "OMFG LELVE"
+		level += 1
+		spawned_on_this_level = 0
+		spawn_countdown = 600
+
 def main():
-	global background, background0, screen, enemies, towers, projectiles, money, lives, going
+	global background, background0, screen, enemies, towers, projectiles, money, lives, going, level, spawn_countdown
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background0 = pygame.image.load("map1.png").convert_alpha()
@@ -138,6 +150,7 @@ def main():
 	pygame.display.flip()
 	clock = pygame.time.Clock()
 	going = True
+	level = 0
 	lives = 13
 	money = 1000
 	spawn_countdown = 0
@@ -151,8 +164,8 @@ def main():
 		clock.tick(speed)
 		spawn_countdown -= 1
 		if spawn_countdown <= 0:
-			spawn()
 			spawn_countdown = 30
+			spawn()
 
 		# Money must be funny
 		font = pygame.font.SysFont("Verdana", 16, True)
