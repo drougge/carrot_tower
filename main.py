@@ -84,6 +84,13 @@ class Chainsaw(Sprite):
 	pathy = True
 	def __init__(self, x, y, colour, mx, my):
 		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, [mx, my])
+	def update(self):
+		Sprite.update(self)
+		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
+		if c[0] == 255 and c[1] == 0:
+			lose_life()
+			enemies.remove(self)
+
 
 class Carrot(Sprite):
 	max_speed=8
@@ -102,8 +109,15 @@ def build(what_to_build, position):
 		towers.add(what_to_build(position[0], position[1]))
 		money -= what_to_build.cost
 
+def lose_life():
+	global lives
+	print "DEATH!!!"
+	lives -= 1
+	if lives < 1:
+		pygame.quit()
+
 def main():
-	global background, background0, screen, enemies, towers, projectiles, money
+	global background, background0, screen, enemies, towers, projectiles, money, lives
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background0 = pygame.image.load("map1.png").convert_alpha()
@@ -118,7 +132,7 @@ def main():
 	going = True
 	lives = 13
 	money = 1000
-	saw = Chainsaw(1103, 79, "red", -4, 0)
+	saw = Chainsaw(1071, 79, "red", -32, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
