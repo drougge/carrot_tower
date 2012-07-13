@@ -23,16 +23,22 @@ def imgload(names):
 
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
+	animate = False
+	_offset = (0, 0)
 	def __init__(self, imgs, x, y, move=False):
 		pygame.sprite.Sprite.__init__(self)
 		self._imgs = imgload(imgs)
-		self._img = self._imgs[0]
 		self._pos = (x, y)
 		self._dir = dir
 		self._move = move
+		self._cur_img = 0
+		self._rot = 0
+		self._anim = 0
 		if move:
 			self._setrot()
+			self._newimg()
 		else:
+			self._img = self._imgs[0]
 			self.image = self._img[0]
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
@@ -41,9 +47,17 @@ class Sprite(pygame.sprite.Sprite):
 		return c[0] == 255
 	def _setrot(self):
 		self._rot = int(degrees(atan2(*self._move)) - 90) % 360
+	def _newimg(self, force=False):
+		if self.animate:
+			self._anim += 1
+		if force or self.animate is self._anim:
+			self._anim = 0
+			self._cur_img += 1
+			self._cur_img %= len(self._imgs)
+		self._img = self._imgs[self._cur_img]
 		self.image = self._img[self._rot]
 	def update(self):
-		z = map(div, self.image.get_size(), (2, 2))
+		z = map(div, map(add, self.image.get_size(), self._offset), (2, 2))
 		if self._move:
 			if self.pathy:
 				sign = 1
@@ -54,9 +68,11 @@ class Sprite(pygame.sprite.Sprite):
 				self._move = move
 				self._setrot()
 			self._pos = map(add, self._pos, self._move)
+		self._newimg()
 		x, y = map(int, self._pos)
 		xz, yz = z
-		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
+		xo, yo = self._offset
+		self.rect = pygame.rect.Rect(x - xz + xo, y - yz + yo, xz * 2, yz * 2)
 
 class Tower(Sprite):
 	range = 100
@@ -66,7 +82,7 @@ class Tower(Sprite):
 	sprite_filenames = ("saw_red_1.png", )
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
-		#self.image = self._img[90]
+		self._fired = False
 	def update(self):
 		Sprite.update(self)
 		self.time_since_last_fire += 1
@@ -84,12 +100,27 @@ class Tower(Sprite):
 		dist = ceil(dist / SCALE * 0.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
+		self._fired = True
 
 class Krisseh(Tower):
-	sprite_filenames = ("hat.png", "hat_krisseh_half.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	__anim = 0
+	_offset = (0, -32)
+	def update(self):
+		Tower.update(self)
+		if self._fired:
+			self.__anim = 1
+			self._fired = False
+		if self.__anim:
+			self.__anim -= 1
+			if not self.__anim:
+				self._newimg(True)
+				if self._cur_img:
+					self.__anim = 10
 
 class Chainsaw(Sprite):
 	pathy = True
+	animate = 2
 	def __init__(self, x, y, colour, mx, my):
 		Sprite.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 	def update(self):
