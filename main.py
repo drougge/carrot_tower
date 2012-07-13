@@ -35,6 +35,9 @@ class Chainsaw(Sprite):
 def main():
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
+	background = pygame.image.load("map1.png").convert()
+	screen.blit(background, (0, 0))
+	pygame.display.flip()
 	clock = pygame.time.Clock()
 	going = True
 	lives = 13
