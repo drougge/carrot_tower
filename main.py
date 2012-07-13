@@ -32,6 +32,10 @@ class Chainsaw(Sprite):
 	def __init__(self, x, y):
 		Sprite.__init__(self, "chainsaw.png", x, y, 270)
 
+class Carrot(Sprite):
+	def __init__(self, x, y):
+		Sprite.__init__(self, "carrot.png", x, y, 0)
+
 def main():
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
