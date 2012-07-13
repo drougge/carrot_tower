@@ -13,17 +13,19 @@ speed = 60
 collcmp = pygame.sprite.collide_circle_ratio(0.6)
 _images = {}
 
-def imgload(name):
-	if name not in _images:
-		img = pygame.image.load(name).convert_alpha()
-		_images[name] = dict([(deg, pygame.transform.rotate(img, deg)) for deg in range(0, 360)])
-	return _images[name]
+def imgload(names):
+	for name in names:
+		if name not in _images:
+			img = pygame.image.load(name).convert_alpha()
+			_images[name] = dict([(deg, pygame.transform.rotate(img, deg)) for deg in range(0, 360)])
+	return [_images[name] for name in names]
 
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
-	def __init__(self, img, x, y, move=False):
+	def __init__(self, imgs, x, y, move=False):
 		pygame.sprite.Sprite.__init__(self)
-		self._img = imgload(img)
+		self._imgs = imgload(imgs)
+		self._img = self._imgs[0]
 		self._pos = (x, y)
 		self._dir = dir
 		self._move = move
@@ -62,7 +64,7 @@ class Tower(Sprite):
 	cost = 150
 	sprite_filenames = ("saw_red_1.png", )
 	def __init__(self, x, y):
-		Sprite.__init__(self, self.sprite_filenames[0], x, y)
+		Sprite.__init__(self, self.sprite_filenames, x, y)
 		#self.image = self._img[90]
 	def update(self):
 		Sprite.update(self)
@@ -88,7 +90,7 @@ class Krisseh(Tower):
 class Chainsaw(Sprite):
 	pathy = True
 	def __init__(self, x, y, colour, mx, my):
-		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, [mx, my])
+		Sprite.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
@@ -103,7 +105,7 @@ class Carrot(Sprite):
 		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
-		Sprite.__init__(self, "carrot.png", x, y, map(div, posdiff, (s, s)))
+		Sprite.__init__(self, ("carrot.png",), x, y, map(div, posdiff, (s, s)))
 		self._range = range
 
 	def update(self):
