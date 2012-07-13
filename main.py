@@ -24,6 +24,7 @@ def imgload(names):
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
 	animate = False
+	_offset = (0, 0)
 	def __init__(self, imgs, x, y, move=False):
 		pygame.sprite.Sprite.__init__(self)
 		self._imgs = imgload(imgs)
@@ -56,7 +57,7 @@ class Sprite(pygame.sprite.Sprite):
 		self._img = self._imgs[self._cur_img]
 		self.image = self._img[self._rot]
 	def update(self):
-		z = map(div, self.image.get_size(), (2, 2))
+		z = map(div, map(add, self.image.get_size(), self._offset), (2, 2))
 		if self._move:
 			if self.pathy:
 				sign = 1
@@ -70,7 +71,8 @@ class Sprite(pygame.sprite.Sprite):
 		self._newimg()
 		x, y = map(int, self._pos)
 		xz, yz = z
-		self.rect = pygame.rect.Rect(x - xz, y - yz, xz * 2, yz * 2)
+		xo, yo = self._offset
+		self.rect = pygame.rect.Rect(x - xz + xo, y - yz + yo, xz * 2, yz * 2)
 
 class Tower(Sprite):
 	range = 100
@@ -103,6 +105,7 @@ class Tower(Sprite):
 class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 	__anim = 0
+	_offset = (0, -32)
 	def update(self):
 		Tower.update(self)
 		if self._fired:
