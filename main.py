@@ -60,7 +60,7 @@ class Tower(Sprite):
 	interval = 16
 	time_since_last_fire = 0
 	cost = 150
-	sprite_filenames = ("saw_red_1.png")
+	sprite_filenames = ("saw_red_1.png", )
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames[0], x, y)
 		#self.image = self._img[90]
