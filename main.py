@@ -187,9 +187,13 @@ def main():
 		font = pygame.font.SysFont("Verdana", 16, True)
 		money_render = font.render(str(money), True, (0,0,0))
 		lives_render = font.render(str(lives), True, (0,0,0))
+		level_render = font.render(str(level), True, (0,0,0))
+		next_render = font.render(str(spawn_countdown), True, (0,0,0))
 		screen.blit(panel, (1088, 0))
 		screen.blit(money_render, (1280-16-money_render.get_size()[0], 7))
 		screen.blit(lives_render, (1280-16-lives_render.get_size()[0], 35))
+		screen.blit(level_render, (1280-16-level_render.get_size()[0], 35+28))
+		screen.blit(next_render, (1280-16-next_render.get_size()[0], 35+28+28))
 		#screen.blit(lives_render, (1110, 25))
 
 		for thing in things:
