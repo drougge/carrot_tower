@@ -94,7 +94,7 @@ class Chainsaw(Sprite):
 class Carrot(Sprite):
 	max_speed=8
 	def __init__(self, x, y, target_position):
-		posdiff = map(sub, (x, y), target_position)
+		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
 		Sprite.__init__(self, "carrot.png", x, y, map(div, posdiff, (s, s)))
