@@ -59,6 +59,7 @@ class Tower(Sprite):
 	range = 256
 	interval = 16
 	time_since_last_fire = 0
+	cost = 150
 	def __init__(self, x, y):
 		Sprite.__init__(self, "saw_red_1.png", x, y)
 		self.image = self._img[90]
@@ -89,6 +90,12 @@ class Carrot(Sprite):
 		Sprite.__init__(self, "carrot.png", x, y)
 		self.image = self._img[90]
 
+def build(what_to_build, position):
+	global money
+	if money >= what_to_build.cost:
+		towers.add(what_to_build(position[0], position[1]))
+		money -= what_to_build.cost
+
 def main():
 	global background, enemies, towers, projectiles, money
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
@@ -96,6 +103,7 @@ def main():
 	background = pygame.image.load("map1.png").convert_alpha()
 	background = pygame.transform.scale(background, map(mul, background.get_size(), (32, 32)))
 	screen.blit(background, (0, 0))
+	panel = pygame.image.load("panel.png").convert_alpha()
 
 	pygame.font.init()
 
@@ -108,12 +116,15 @@ def main():
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
+
+	what_to_build = Tower
 	while going and lives > 0:
 		clock.tick(speed)
 
 		# Money must be funny
 		font = pygame.font.SysFont("Verdana", 16, True)
 		money_render = font.render(str(money), True, (255,255,255), (0,0,0))
+		screen.blit(panel, (1088, 0))
 		screen.blit(money_render, (1110, 5))
 
 		enemies.update()
@@ -126,7 +137,7 @@ def main():
 			elif event.type == KEYDOWN and event.key == K_ESCAPE:
 				going = False
 			elif event.type == MOUSEBUTTONUP:
-				towers.add(Tower(event.pos[0], event.pos[1]))
+				build(what_to_build, (event.pos[0], event.pos[1]))
 		towers.update()
 		towers.draw(screen)
 		projectiles.update()
