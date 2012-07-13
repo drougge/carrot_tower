@@ -46,13 +46,13 @@ class Sprite(pygame.sprite.Sprite):
 		return c[0] == 255
 	def _setrot(self):
 		self._rot = int(degrees(atan2(*self._move)) - 90) % 360
-	def _newimg(self):
+	def _newimg(self, force=False):
 		if self.animate:
 			self._anim += 1
-			if self.animate == self._anim:
-				self._anim = 0
-				self._cur_img += 1
-				self._cur_img %= len(self._imgs)
+		if force or self.animate is self._anim:
+			self._anim = 0
+			self._cur_img += 1
+			self._cur_img %= len(self._imgs)
 		self._img = self._imgs[self._cur_img]
 		self.image = self._img[self._rot]
 	def update(self):
@@ -80,7 +80,7 @@ class Tower(Sprite):
 	sprite_filenames = ("saw_red_1.png", )
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
-		#self.image = self._img[90]
+		self._fired = False
 	def update(self):
 		Sprite.update(self)
 		self.time_since_last_fire += 1
@@ -98,9 +98,22 @@ class Tower(Sprite):
 		dist = ceil(dist / SCALE * 0.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
+		self._fired = True
 
 class Krisseh(Tower):
-	sprite_filenames = ("hat.png", "hat_krisseh_half.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	__anim = 0
+	def update(self):
+		Tower.update(self)
+		if self._fired:
+			self.__anim = 1
+			self._fired = False
+		if self.__anim:
+			self.__anim -= 1
+			if not self.__anim:
+				self._newimg(True)
+				if self._cur_img:
+					self.__anim = 10
 
 class Chainsaw(Sprite):
 	pathy = True
