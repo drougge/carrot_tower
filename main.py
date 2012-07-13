@@ -60,9 +60,10 @@ class Tower(Sprite):
 	interval = 16
 	time_since_last_fire = 0
 	cost = 150
+	sprite_filenames = ("saw_red_1.png")
 	def __init__(self, x, y):
-		Sprite.__init__(self, "saw_red_1.png", x, y)
-		self.image = self._img[90]
+		Sprite.__init__(self, self.sprite_filenames[0], x, y)
+		#self.image = self._img[90]
 	def update(self):
 		Sprite.update(self)
 		self.time_since_last_fire += 1
@@ -80,6 +81,9 @@ class Tower(Sprite):
 		dist = ceil(dist / SCALE * 0.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
+
+class Krisseh(Tower):
+	sprite_filenames = ("hat.png", "hat_krisseh_half.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 
 class Chainsaw(Sprite):
 	pathy = True
@@ -153,13 +157,13 @@ def main():
 	level = 0
 	lives = 13
 	money = 1000
-	spawn_countdown = 0
+	spawn_countdown = 600
 	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
 	things = [enemies, towers, projectiles]
 
-	what_to_build = Tower
+	what_to_build = Krisseh
 	while going and lives > 0:
 		clock.tick(speed)
 		spawn_countdown -= 1
