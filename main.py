@@ -71,8 +71,7 @@ class Tower(Sprite):
 				self.fire(closest_enemy)
 	def fire(self, enemy):
 		self.time_since_last_fire = 0
-		projectile = Carrot(self._pos[0], self._pos[1], enemy._pos)
-
+		projectiles.add(Carrot(self._pos[0], self._pos[1], enemy._pos))
 
 class Chainsaw(Sprite):
 	pathy = True
@@ -83,22 +82,34 @@ class Chainsaw(Sprite):
 class Carrot(Sprite):
 	def __init__(self, x, y, target_position):
 		Sprite.__init__(self, "carrot.png", x, y)
+		self.image = self._img[90]
 
 def main():
-	global background, enemies, towers
+	global background, enemies, towers, projectiles, money
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background = pygame.image.load("map1.png").convert_alpha()
 	screen.blit(background, (0, 0))
+
+	pygame.font.init()
+
 	pygame.display.flip()
 	clock = pygame.time.Clock()
 	going = True
 	lives = 13
+	money = 1000
 	saw = Chainsaw(1100, 60, "red", -1, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	towers = pygame.sprite.RenderClear([])
+	projectiles = pygame.sprite.RenderClear([])
 	while going and lives > 0:
 		clock.tick(speed)
+
+		# Money must be funny
+		font = pygame.font.SysFont("Verdana", 16, True)
+		money_render = font.render(str(money), True, (255,255,255), (0,0,0))
+		screen.blit(money_render, (1110, 5))
+
 		enemies.update()
 		enemies.draw(screen)
 		pygame.display.flip()
@@ -112,6 +123,8 @@ def main():
 				towers.add(Tower(event.pos[0], event.pos[1]))
 		towers.update()
 		towers.draw(screen)
+		projectiles.update()
+		projectiles.draw(screen)
 	pygame.quit()
 
 if __name__ == "__main__":
