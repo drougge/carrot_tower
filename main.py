@@ -19,14 +19,16 @@ def imgload(name):
 
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
-	def __init__(self, img, x, y, rot, move=False):
+	def __init__(self, img, x, y, move=False):
 		pygame.sprite.Sprite.__init__(self)
 		self._img = imgload(img)
 		self._pos = (x, y)
 		self._dir = dir
 		self._move = move
-		self._rot = rot
-		self.image = self._img[rot]
+		if move:
+			self._setrot()
+		else:
+			self.image = self._img[0]
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
 		m = [m * oz for m, oz in zip(move1, z)]
@@ -54,12 +56,12 @@ class Sprite(pygame.sprite.Sprite):
 
 class Tower(Sprite):
 	def __init__(self, x, y):
-		Sprite.__init__(self, "tower.png", x, y, 0)
+		Sprite.__init__(self, "tower.png", x, y)
 
 class Chainsaw(Sprite):
 	pathy = True
-	def __init__(self, x, y, colour, rot, mx, my):
-		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, rot, [mx, my])
+	def __init__(self, x, y, colour, mx, my):
+		Sprite.__init__(self, "saw_" + colour + "_1.png", x, y, [mx, my])
 
 class Carrot(Sprite):
 	def __init__(self, x, y):
@@ -75,7 +77,7 @@ def main():
 	clock = pygame.time.Clock()
 	going = True
 	lives = 13
-	saw = Chainsaw(1100, 68, "red", 180, -4, 0)
+	saw = Chainsaw(1100, 68, "red", -4, 0)
 	enemies = pygame.sprite.RenderClear([saw])
 	while going and lives > 0:
 		clock.tick(speed)
