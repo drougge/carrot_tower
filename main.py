@@ -20,6 +20,7 @@ _snd_death = pygame.mixer.Sound("trollandi_death.wav")
 _snd_woop = pygame.mixer.Sound("rajula_woop.wav")
 _snd_cucumber = pygame.mixer.Sound("cucumber.wav")
 _snd_carrot = pygame.mixer.Sound("carrot.wav")
+_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 def imgload(names):
 	for name in names:
