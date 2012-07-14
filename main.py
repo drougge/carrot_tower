@@ -121,7 +121,7 @@ class Tower(Sprite):
 					self.__anim = 10
 	def fire(self, enemy, dist):
 		self.time_since_last_fire = 0
-		dist = ceil(dist / SCALE * 0.95)
+		dist = ceil(dist / SCALE * 1.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
 		self._fired = True
