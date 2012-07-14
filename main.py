@@ -401,13 +401,14 @@ def main():
 		full[i] = (full[i][0], half[i][1])
 
 	knapps = []
-	for y, fn in enumerate(("hat.png", "agurk.png")):
-		knapps.append(Knappy((fn,), 1184, 332 + 80 * y))
+	for y, fn in ((332, "hat.png"), (396, "superhat.png"), (476, "agurk.png")):
+		knapps.append(Knappy((fn,), 1184, y))
 	mouse = Mouse(["hat.png"], 0, 0)
 	things.append(pygame.sprite.RenderClear(knapps + [mouse]))
 
 	buttons = {(18, 5): (Krisseh, "hat.png"),
-	           (18, 6): (Agurka, "agurk.png"),
+	           (18, 6): (SuperKrisseh, "superhat.png"),
+	           (18, 7): (Agurka, "agurk.png"),
 	          }
 	select_tower(*buttons[(18, 5)])
 
