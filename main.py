@@ -124,7 +124,7 @@ class Tower(Sprite):
 		self.time_since_last_fire = 0
 		dist = ceil(dist / SCALE * 1.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
-		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
+		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range, self.damage))
 		self._fired = True
 
 class Krisseh(Tower):
@@ -138,6 +138,13 @@ class SuperKrisseh(Tower):
 	range = 120
 	sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png")
 	_offset = (0, -32)
+
+class Pringles(Tower):
+	cost = 650
+	damage = 50
+	interval = 64
+	range = 400
+	sprite_filenames = ("pringles_1.png", "pringles_2.png", "pringles_1.png", "pringles_3.png")
 
 class ExtTower(Tower):
 	cost = 600
@@ -235,7 +242,10 @@ class Weapon(Sprite):
 
 class Carrot(Weapon):
 	max_speed=8
-	def __init__(self, x, y, target_position, range):
+	def __init__(self, x, y, target_position, range, damage=None):
+		if damage is None:
+			damage = Weapon.damage
+		self.damage = damage
 		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
@@ -365,6 +375,7 @@ def main():
 	loading(3)
 
 	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "superkrisseh_full.png", "superkrisseh_half.png", "box.png"))
+	imgload(("pringles_1.png", "pringles_2.png", "pringles_3.png"))
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
 	imgload(["saw_" + c + "_1.png" for c in colours])
@@ -434,7 +445,7 @@ def main():
 				if event.button == 1:
 					what_to_build = Krisseh
 				if event.button == 3:
-					what_to_build = ExtTower
+					what_to_build = Pringles
 				upgrade_done = False
 				for t in towers:
 					if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
