@@ -343,6 +343,12 @@ def main():
 	imgload(["ext_" + str(i) + ".png" for i in range(1, 5)])
 	font = pygame.font.SysFont("Verdana", 16, True)
 
+	# Fix Krisseh collisions
+	full = _images["hat_krisseh_full.png"]
+	half = _images["hat_krisseh_half.png"]
+	for i in range(360):
+		full[i] = (full[i][0], half[i][1])
+
 	screen.fill((255, 0, 228))
 	screen.blit(background, (0, 0))
 	screen.blit(panel, (1088, 0))
