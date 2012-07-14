@@ -131,6 +131,14 @@ class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 	_offset = (0, -32)
 
+class SuperKrisseh(Tower):
+	cost = 800
+	damage = 4
+	interval = 4
+	range = 120
+	sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png")
+	_offset = (0, -32)
+
 class ExtTower(Tower):
 	cost = 600
 	damage = 10
@@ -355,7 +363,7 @@ def main():
 	things = [enemies, towers, projectiles, bars, hilight_box]
 	loading(3)
 
-	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "box.png"))
+	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "superkrisseh_full.png", "superkrisseh_half.png", "box.png"))
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
 	imgload(["saw_" + c + "_1.png" for c in colours])
@@ -366,6 +374,10 @@ def main():
 	# Fix Krisseh collisions
 	full = _images["hat_krisseh_full.png"]
 	half = _images["hat_krisseh_half.png"]
+	for i in range(360):
+		full[i] = (full[i][0], half[i][1])
+	full = _images["superkrisseh_full.png"]
+	half = _images["superkrisseh_half.png"]
 	for i in range(360):
 		full[i] = (full[i][0], half[i][1])
 
