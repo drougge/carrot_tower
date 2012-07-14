@@ -119,25 +119,25 @@ class Krisseh(Tower):
 					self.__anim = 10
 
 class Enemy(Sprite):
+	pathy = True
 	life = 1
 	def im_hit(self, p):
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
 			enemies.remove(self)
-
-class Chainsaw(Enemy):
-	pathy = True
-	animate = 2
-	life = 3
-	def __init__(self, x, y, colour, mx, my):
-		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
 		if c[0] == 255 and c[1] == 0:
 			lose_life()
 			enemies.remove(self)
+
+class Chainsaw(Enemy):
+	animate = 2
+	life = 3
+	def __init__(self, x, y, colour, mx, my):
+		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 
 
 class Weapon(Sprite):
