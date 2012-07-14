@@ -86,6 +86,7 @@ class Tower(Sprite):
 	interval = 16
 	time_since_last_fire = 0
 	cost = 150
+	damage = 2
 	sprite_filenames = ("hat.png", )
 	__anim = 0
 	def __init__(self, x, y):
@@ -134,7 +135,7 @@ class Life(Sprite):
 		self._cur_img = left
 		Sprite.update(self)
 		if e not in enemies:
-			bars.remove(self)
+			self.kill()
 
 class Enemy(Sprite):
 	life = 1
@@ -148,7 +149,7 @@ class Enemy(Sprite):
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
-			enemies.remove(self)
+			self.kill()
 			money += self.bounty
 			_snd_woop.play()
 	def update(self):
@@ -156,7 +157,7 @@ class Enemy(Sprite):
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
 		if c[0] == 255 and c[1] == 0:
 			lose_life()
-			enemies.remove(self)
+			self.kill()
 	def _pathify(self, z):
 		sign = 1
 		move = self._move
@@ -214,7 +215,13 @@ class Carrot(Weapon):
 		Sprite.update(self)
 		self._range -= self.max_speed
 		if self._range < 0:
-			projectiles.remove(self)
+			self.kill()
+
+class Agurka(Weapon):
+	cost = 40
+	damage = 5
+	def __init__(self, x, y):
+		Weapon.__init__(self, ("agurk.png",), x, y)
 
 def build(what_to_build, position):
 	global money
@@ -314,9 +321,10 @@ def main():
 		for thing in things:
 			thing.update()
 			thing.draw(screen)
+		coll = list(projectiles) + list(towers)
 		for e in list(enemies):
-			for c in pygame.sprite.spritecollide(e, projectiles, False, collcmp):
-				projectiles.remove(c)
+			for c in pygame.sprite.spritecollide(e, coll, False, collcmp):
+				c.kill()
 				e.im_hit(c)
 		pygame.display.flip()
 		for thing in things:
