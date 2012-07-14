@@ -25,7 +25,10 @@ def imgload(names):
 	for name in names:
 		if name not in _images:
 			img = pygame.image.load(name).convert_alpha()
-			_images[name] = dict([(deg, pygame.transform.rotate(img, deg)) for deg in range(0, 360)])
+			def rot(deg):
+				i = pygame.transform.rotate(img, deg)
+				return i, pygame.mask.from_surface(i)
+			_images[name] = dict([(deg, rot(deg)) for deg in range(0, 360)])
 	return [_images[name] for name in names]
 
 _lifeimgs = []
@@ -34,7 +37,7 @@ for i in range(17):
 	bar.fill((255, 0, 0))
 	bar.fill((0, 255, 0), pygame.rect.Rect(0, 0, i, 3))
 	n = "life" + str(i)
-	_images[n] = {0: bar}
+	_images[n] = {0: [bar, None]}
 	_lifeimgs.append(n)
 
 class Sprite(pygame.sprite.Sprite):
@@ -54,7 +57,7 @@ class Sprite(pygame.sprite.Sprite):
 			self._newimg()
 		else:
 			self._img = self._imgs[0]
-			self.image = self._img[0]
+			self.image, self.mask = self._img[0]
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
 		m = map(mul, move1, map(add, z, (1, 1)))
@@ -72,7 +75,7 @@ class Sprite(pygame.sprite.Sprite):
 			self._cur_img += 1
 			self._cur_img %= len(self._imgs)
 		self._img = self._imgs[self._cur_img]
-		self.image = self._img[self._rot]
+		self.image, self.mask = self._img[self._rot]
 	def update(self):
 		z = map(div, map(add, self.image.get_size(), self._offset), (2, 2))
 		if self._move:
