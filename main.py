@@ -342,7 +342,6 @@ def game_over():
 	
 
 def loading(nr):
-	return
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
 	zx, zy = loading_text.get_size()
 	screen.blit(loading_text, (1200 - zx, 700 - zy))
