@@ -35,7 +35,6 @@ for i in range(17):
 	_lifeimgs.append(n)
 
 class Sprite(pygame.sprite.Sprite):
-	pathy = False
 	animate = False
 	_offset = (0, 0)
 	def __init__(self, imgs, x, y, move=False):
@@ -58,6 +57,8 @@ class Sprite(pygame.sprite.Sprite):
 		m = map(mul, move1, map(add, z, (1, 1)))
 		c = background0.get_at(map(int, map(div, map(add, self._pos, m), (SCALE, SCALE))))
 		return c[0] == 255
+	def _pathify(self, z):
+		pass
 	def _setrot(self):
 		self._rot = int(degrees(atan2(*self._move)) - 90) % 360
 	def _newimg(self, force=False):
@@ -72,14 +73,7 @@ class Sprite(pygame.sprite.Sprite):
 	def update(self):
 		z = map(div, map(add, self.image.get_size(), self._offset), (2, 2))
 		if self._move:
-			if self.pathy:
-				sign = 1
-				move = self._move
-				while not self._can_move(z, move):
-					move = self._move[1] * sign, self._move[0] * sign
-					sign = -sign
-				self._move = move
-				self._setrot()
+			self._pathify(z)
 			self._pos = map(add, self._pos, self._move)
 		self._newimg()
 		x, y = map(int, self._pos)
@@ -143,7 +137,6 @@ class Life(Sprite):
 			bars.remove(self)
 
 class Enemy(Sprite):
-	pathy = True
 	life = 1
 	max_life = 1
 	bounty = 0
@@ -164,6 +157,14 @@ class Enemy(Sprite):
 		if c[0] == 255 and c[1] == 0:
 			lose_life()
 			enemies.remove(self)
+	def _pathify(self, z):
+		sign = 1
+		move = self._move
+		while not self._can_move(z, move):
+			move = self._move[1] * sign, self._move[0] * sign
+			sign = -sign
+		self._move = move
+		self._setrot()
 
 class Chainsaw(Enemy):
 	animate = 2
@@ -172,6 +173,30 @@ class Chainsaw(Enemy):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 		self.life = self.max_life = life
 
+class SmartChainsaw(Chainsaw):
+	def __init__(self, *a):
+		Chainsaw.__init__(self, *a)
+		self._choices = [2, 2, 1, 2]
+		self._wait = 0
+		self._soon = 0
+	def _pathify(self, z):
+		move = self._move
+		sign = 1
+		can = []
+		while len(can) < 3:
+			can.append((self._can_move(z, move), move))
+			move = self._move[1] * sign, self._move[0] * sign
+			sign = -sign
+		self._wait -= 1
+		self._soon -= 1
+		if self._soon == 0:
+			self._move = can[self._choices.pop()][1]
+			self._wait = 10
+		elif self._wait <= 0 and self._soon < 0 and [c[0] for c in can] == [True, True, True]:
+			self._soon = 4
+		else:
+			self._move = [c[1] for c in can if c[0]][0]
+		self._setrot()
 
 class Weapon(Sprite):
 	damage = 1
@@ -213,7 +238,7 @@ def spawn():
 	count, colour, life = spawns[level]
 	spawned_on_this_level += 1
 	print "spånat: " + str(spawned_on_this_level)
-	enemies.add(Chainsaw(1071, 79, colour, life, -4, 0))
+	enemies.add(SmartChainsaw(1071, 79, colour, life, -4, 0))
 
 	if spawned_on_this_level >= count:
 		print "OMFG LELVE"
@@ -248,7 +273,7 @@ def main():
 	level = 0
 	lives = 13
 	money = 1000
-	spawn_countdown = 600
+	spawn_countdown = 60
 	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
