@@ -91,6 +91,7 @@ class Tower(Sprite):
 	sprite_filenames = ("hat.png", )
 	__anim = 0
 	fire_anim_interval = 10
+	fire_sound = None
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 		self._fired = False
@@ -121,6 +122,8 @@ class Tower(Sprite):
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range, self.damage))
 		self._fired = True
+		if self.fire_sound:
+			self.fire_sound.play()
 
 class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
@@ -147,6 +150,7 @@ class ExtTower(Tower):
 	interval = 8
 	fire_anim_interval = 4
 	range = 200
+	fire_sound = _snd_blurgh
 	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
 
 class Life(Sprite):
