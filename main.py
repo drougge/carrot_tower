@@ -267,7 +267,7 @@ class Carrot(Weapon):
 
 class Agurka(Weapon):
 	cost = 40
-	damage = 5
+	damage = 50
 	def __init__(self, x, y):
 		Weapon.__init__(self, ("agurk.png",), x, y)
 
