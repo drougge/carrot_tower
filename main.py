@@ -135,6 +135,8 @@ class Life(Sprite):
 		left = int((float(e.life) / e.max_life) * 16)
 		self._cur_img = left
 		Sprite.update(self)
+		if e not in enemies:
+			bars.remove(self)
 
 class Enemy(Sprite):
 	pathy = True
