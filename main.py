@@ -283,19 +283,23 @@ def loading(nr):
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
 	zx, zy = loading_text.get_size()
 	screen.blit(loading_text, (1200 - zx, 700 - zy))
-	pygame.display.flip()
-	sleep(0.6)
+	for i in range(36):
+		pygame.display.flip()
+		clock.tick(speed)
+		pygame.event.get()
 
 def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
 	pygame.font.init()
+	clock = pygame.time.Clock()
 
 	font = pygame.font.SysFont("Verdana", 128, True)
 	loading_text = font.render("Loading", True, (0,0,0))
+	pygame.event.get()
 	loading(1)
 
 	background0 = pygame.image.load("map1.png").convert_alpha()
@@ -303,7 +307,6 @@ def main():
 	panel = pygame.image.load("panel.png").convert_alpha()
 	loading(2)
 
-	clock = pygame.time.Clock()
 	going = True
 	level = 0
 	lives = 13
