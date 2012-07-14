@@ -150,14 +150,14 @@ class Enemy(Sprite):
 	def __init__(self, *a):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
-	def im_hit(self, p):
+	def im_hit(self, p, snd):
 		global money, _snd_carrot
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
 			self.kill()
 			money += self.bounty
-			_snd_carrot.play()
+			snd.play()
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
@@ -377,11 +377,16 @@ def main():
 		for thing in things:
 			thing.update()
 			thing.draw(screen)
-		coll = list(projectiles) + list(towers)
+		coll = list(projectiles)
 		for e in list(enemies):
 			for c in pygame.sprite.spritecollide(e, coll, False, collcmp):
 				c.kill()
-				e.im_hit(c)
+				e.im_hit(c, _snd_carrot)
+		coll = list(towers)
+		for e in list(enemies):
+			for c in pygame.sprite.spritecollide(e, coll, False, collcmp):
+				c.kill()
+				e.im_hit(c, _snd_cucumber)
 		pygame.display.flip()
 		for thing in things:
 			thing.clear(screen, background)
