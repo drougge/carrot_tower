@@ -335,11 +335,19 @@ def main():
 	things = [enemies, towers, projectiles, bars, hilight_box]
 	loading(3)
 
-	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png"))
+	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "box.png"))
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
 	imgload(["saw_" + c + "_1.png" for c in colours])
 	imgload(["saw_" + c + "_2.png" for c in colours])
+	imgload(["ext_" + str(i) + ".png" for i in range(1, 5)])
+	font = pygame.font.SysFont("Verdana", 16, True)
+
+	# Fix Krisseh collisions
+	full = _images["hat_krisseh_full.png"]
+	half = _images["hat_krisseh_half.png"]
+	for i in range(360):
+		full[i] = (full[i][0], half[i][1])
 
 	screen.fill((255, 0, 228))
 	screen.blit(background, (0, 0))
@@ -355,7 +363,6 @@ def main():
 			spawn()
 
 		# Money must be funny
-		font = pygame.font.SysFont("Verdana", 16, True)
 		money_render = font.render(str(money), True, (0,0,0))
 		lives_render = font.render(str(lives), True, (0,0,0))
 		level_render = font.render(str(level), True, (0,0,0))
