@@ -218,6 +218,11 @@ class Carrot(Weapon):
 		if self._range < 0:
 			projectiles.remove(self)
 
+class Box(Sprite):
+	sprite_filenames = "box.png", 
+	def __init__(self, x, y):
+		Sprite.__init__(self, self.sprite_filenames, x, y)
+
 def build(what_to_build, position):
 	global money
 	if money >= what_to_build.cost:
@@ -290,7 +295,8 @@ def main():
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
 	bars = pygame.sprite.RenderClear([])
-	things = [enemies, towers, projectiles, bars]
+	hilight_box = pygame.sprite.RenderClear([])
+	things = [enemies, towers, projectiles, bars, hilight_box]
 
 	what_to_build = Krisseh
 	while going and lives > 0:
@@ -330,6 +336,11 @@ def main():
 				going = False
 			elif event.type == MOUSEBUTTONUP:
 				build(what_to_build, (event.pos[0], event.pos[1]))
+			elif event.type == MOUSEMOTION:
+				position = event.pos
+				hilight_box.empty()
+				hilight_box.add(Box(position[0], position[1]))
+				print "move " + str(event.pos[0]) + ", " + str(event.pos[1])
 	pygame.quit()
 
 if __name__ == "__main__":
