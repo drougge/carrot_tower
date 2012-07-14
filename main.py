@@ -172,7 +172,7 @@ def lose_life():
 spawned_on_this_level = 0
 def spawn():
 	global level, spawned_on_this_level, spawn_countdown
-	spawns = [(3, "red", 3), (5, "blue", 4)] + [(7, "red", 5), (7, "blue", 5)] * 30
+	spawns = [(3, "red", 3), (5, "blue", 4), (7, "red", 5), (7, "blue", 7), (4, "red", 10), (1, "blue", 23), (5, "red", 14)]
 
 	count, colour, life = spawns[level]
 	spawned_on_this_level += 1
