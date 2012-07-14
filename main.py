@@ -69,7 +69,6 @@ class Sprite(pygame.sprite.Sprite):
 			self._anim = 0
 			self._cur_img += 1
 			self._cur_img %= len(self._imgs)
-		print "NEW",len(self._imgs), self._cur_img
 		self._img = self._imgs[self._cur_img]
 		self.image, self.mask = self._img[self._rot]
 	def update(self):
@@ -319,11 +318,9 @@ def spawn():
 	else:
 		enemy, count, colour, life = Chainsaw, 6, "pink", level*2
 	spawned_on_this_level += 1
-	print u"spåvnat: " + str(spawned_on_this_level)
 	enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
 	if spawned_on_this_level >= count:
-		print "OMFG LELVE"
 		level += 1
 		spawned_on_this_level = 0
 		spawn_countdown = 600
@@ -492,7 +489,6 @@ def main():
 						build(what_to_build, (ruta[0], ruta[1]))
 			elif event.type == MOUSEMOTION:
 				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
-				print "ruta " + str(ruta[0]) + ", " + str(ruta[1])
 				hilight_box._pos = (ruta[0] * 64 + 32, ruta[1] * 64 + 32)
 				if ruta[0] > 16: # panel
 					mouse._pos = (10000, 0)
