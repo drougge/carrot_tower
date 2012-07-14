@@ -325,6 +325,11 @@ def loading(nr):
 		clock.tick(speed)
 		pygame.event.get()
 
+def select_tower(what, mouse):
+	global what_to_build
+	what_to_build = what
+	#mouse = buttons[ruta]
+
 def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock
@@ -376,12 +381,16 @@ def main():
 		knapps.append(Knappy((fn,), 1184, 332 + 80 * y))
 	things.append(pygame.sprite.RenderClear(knapps))
 
+	buttons = {(18, 5): (Krisseh, "hat.png"),
+	           (18, 6): (Agurka, "agurk.png"),
+	          }
+	select_tower(*buttons[(18, 5)])
+
 	screen.fill((255, 0, 228))
 	screen.blit(background, (0, 0))
 	screen.blit(panel, (1088, 0))
 	pygame.display.flip()
 
-	what_to_build = Krisseh
 	while going and lives > 0:
 		clock.tick(speed)
 		spawn_countdown -= 1
@@ -425,16 +434,10 @@ def main():
 			elif event.type == KEYDOWN and event.key == K_RETURN:
 				spawn_countdown = 0
 			elif event.type == MOUSEBUTTONUP:
-#				if event.button == 1:
-#					what_to_build = Krisseh
-#				if event.button == 3:
-#					what_to_build = Agurka
 				upgrade_done = False
 				if ruta[0] > 16: # panel
-					if ruta == (18, 5):
-						what_to_build = Krisseh
-					elif ruta == (18, 6):
-						what_to_build = Agurka
+					if ruta in buttons:
+						select_tower(*buttons[ruta])
 				else:
 					for t in towers:
 						if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
