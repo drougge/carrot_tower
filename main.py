@@ -74,6 +74,7 @@ class Sprite(pygame.sprite.Sprite):
 			self._anim = 0
 			self._cur_img += 1
 			self._cur_img %= len(self._imgs)
+		print "NEW",len(self._imgs), self._cur_img
 		self._img = self._imgs[self._cur_img]
 		self.image, self.mask = self._img[self._rot]
 	def update(self):
@@ -162,7 +163,7 @@ class Life(Sprite):
 		e = self._enemy
 		self._pos = e._pos[0], e._pos[1] - 18
 		left = int((float(e.life) / e.max_life) * 16)
-		self._cur_img = left
+		self._cur_img = max(left, 0)
 		Sprite.update(self)
 		if e not in enemies:
 			self.kill()
@@ -415,7 +416,7 @@ def main():
 		full[i] = (full[i][0], half[i][1])
 
 	knapps = []
-	for y, fn in ((336, "hat.png"), (400, "superhat.png"), (480, "exttower_1.png"), (544, "prinles_1.png"), (608, "agurk.png")):
+	for y, fn in ((336, "hat.png"), (400, "superhat.png"), (480, "exttower_1.png"), (544, "pringles_1.png"), (608, "agurk.png")):
 		knapps.append(Knappy((fn,), 1184, y))
 	mouse = Mouse(["hat.png"], 0, 0)
 	things.append(pygame.sprite.RenderClear(knapps + [mouse]))
