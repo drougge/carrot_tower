@@ -95,6 +95,7 @@ class Tower(Sprite):
 	damage = 2
 	sprite_filenames = ("hat.png", )
 	__anim = 0
+	fire_anim_interval = 10
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 		self._fired = False
@@ -118,10 +119,10 @@ class Tower(Sprite):
 			if not self.__anim:
 				self._newimg(True)
 				if self._cur_img:
-					self.__anim = 10
+					self.__anim = self.fire_anim_interval
 	def fire(self, enemy, dist):
 		self.time_since_last_fire = 0
-		dist = ceil(dist / SCALE * 0.95)
+		dist = ceil(dist / SCALE * 1.95)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
 		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
 		self._fired = True
@@ -129,6 +130,22 @@ class Tower(Sprite):
 class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 	_offset = (0, -32)
+
+class SuperKrisseh(Tower):
+	cost = 800
+	damage = 4
+	interval = 4
+	range = 120
+	sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png")
+	_offset = (0, -32)
+
+class ExtTower(Tower):
+	cost = 600
+	damage = 12
+	interval = 8
+	fire_anim_interval = 4
+	range = 200
+	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
 
 class Life(Sprite):
 	def __init__(self, enemy):
@@ -365,7 +382,7 @@ def main():
 	things = [enemies, towers, projectiles, bars, pygame.sprite.RenderClear([hilight_box])]
 	loading(3)
 
-	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "box.png"))
+	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "superkrisseh_full.png", "superkrisseh_half.png", "box.png"))
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
 	imgload(["saw_" + c + "_1.png" for c in colours])
@@ -376,6 +393,10 @@ def main():
 	# Fix Krisseh collisions
 	full = _images["hat_krisseh_full.png"]
 	half = _images["hat_krisseh_half.png"]
+	for i in range(360):
+		full[i] = (full[i][0], half[i][1])
+	full = _images["superkrisseh_full.png"]
+	half = _images["superkrisseh_half.png"]
 	for i in range(360):
 		full[i] = (full[i][0], half[i][1])
 
