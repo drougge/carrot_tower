@@ -181,7 +181,7 @@ class Enemy(Sprite):
 		self.life -= p.damage
 		if self.life <= 0:
 			self.kill()
-			money += self.bounty * level
+			money += int(self.bounty * level * 0.5)
 			snd.play()
 	def update(self):
 		Sprite.update(self)
