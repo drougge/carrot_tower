@@ -12,6 +12,7 @@ SCALE = 32
 speed = 60
 
 collcmp = pygame.sprite.collide_circle_ratio(0.6)
+collcmp = pygame.sprite.collide_mask
 _images = {}
 
 pygame.mixer.init(44100, -16, 2, 2048)
