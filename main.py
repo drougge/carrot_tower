@@ -325,14 +325,17 @@ def loading(nr):
 		clock.tick(speed)
 		pygame.event.get()
 
-def select_tower(what, mouse):
-	global what_to_build
+class Mouse(Sprite):
+	pass
+
+def select_tower(what, img):
+	global what_to_build, mouse
 	what_to_build = what
-	#mouse = buttons[ruta]
+	mouse._imgs = imgload([img])
 
 def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
@@ -379,7 +382,8 @@ def main():
 	knapps = []
 	for y, fn in enumerate(("hat.png", "agurk.png")):
 		knapps.append(Knappy((fn,), 1184, 332 + 80 * y))
-	things.append(pygame.sprite.RenderClear(knapps))
+	mouse = Mouse(["hat.png"], 0, 0)
+	things.append(pygame.sprite.RenderClear(knapps + [mouse]))
 
 	buttons = {(18, 5): (Krisseh, "hat.png"),
 	           (18, 6): (Agurka, "agurk.png"),
@@ -449,6 +453,14 @@ def main():
 				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
 				print "ruta " + str(ruta[0]) + ", " + str(ruta[1])
 				hilight_box._pos = (ruta[0] * 64 + 32, ruta[1] * 64 + 32)
+				if ruta[0] > 16: # panel
+					mouse._pos = (10000, 0)
+				else:
+					x, y = ruta[0] * 64 + 32, ruta[1] * 64 + 32
+					yz = mouse.image.get_size()[1]
+					if yz > 64:
+						y -= 16
+					mouse._pos = (x, y)
 	pygame.quit()
 
 if __name__ == "__main__":
