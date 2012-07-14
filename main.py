@@ -177,7 +177,15 @@ class Chainsaw(Enemy):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 		self.life = self.max_life = life
 
+class Ext(Enemy):
+	animate = 2
+	bounty = 50
+	def __init__(self, x, y, colour, life, mx, my):
+		Enemy.__init__(self, ["ext_" + str(n) + ".png" for n in 1,2,3,4,3,2], x, y, [mx, my])
+		self.life = self.max_life = life
+
 class SmartChainsaw(Chainsaw):
+	bounty = 15
 	def __init__(self, *a):
 		Chainsaw.__init__(self, *a)
 		self._choices = [2, 2, 1, 2]
@@ -254,7 +262,9 @@ def spawn():
 	          (Chainsaw, 7, "blue", 7),
 	          (Chainsaw, 4, "red", 10),
 	          (SmartChainsaw, 1, "black", 23),
-	          (Chainsaw, 5, "red", 14)
+	          (Chainsaw, 5, "pink", 14),
+	          (Chainsaw, 8, "green", 17),
+	          (Ext, 1, "pink", 42),
 	         ]
 
 	if level < len(spawns):
@@ -343,8 +353,15 @@ def main():
 				going = False
 			elif event.type == KEYDOWN and event.key == K_ESCAPE:
 				going = False
+			elif event.type == KEYDOWN and event.key == K_RETURN:
+				spawn_countdown = 0
 			elif event.type == MOUSEBUTTONUP:
-				build(what_to_build, (event.pos[0], event.pos[1]))
+				if event.button == 1:
+					what_to_build = Krisseh
+					build(what_to_build, (event.pos[0], event.pos[1]))
+				if event.button == 3:
+					what_to_build = Agurka
+					build(what_to_build, (event.pos[0], event.pos[1]))
 			elif event.type == MOUSEMOTION:
 				position = event.pos
 				hilight_box.empty()
