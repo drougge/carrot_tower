@@ -278,19 +278,31 @@ def game_over():
 	sleep(3)
 	going = False
 	
+
+def loading(nr):
+	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
+	zx, zy = loading_text.get_size()
+	screen.blit(loading_text, (1200 - zx, 700 - zy))
+	pygame.display.flip()
+	sleep(0.6)
+
 def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
-	pygame.display.set_caption("Carrot Tower (without Rajula)")
-	background0 = pygame.image.load("map1.png").convert_alpha()
-	background = pygame.transform.scale(background0, map(mul, background0.get_size(), (SCALE, SCALE)))
-	screen.blit(background, (0, 0))
-	panel = pygame.image.load("panel.png").convert_alpha()
+	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
 	pygame.font.init()
 
-	pygame.display.flip()
+	font = pygame.font.SysFont("Verdana", 128, True)
+	loading_text = font.render("Loading", True, (0,0,0))
+	loading(1)
+
+	background0 = pygame.image.load("map1.png").convert_alpha()
+	background = pygame.transform.scale(background0, map(mul, background0.get_size(), (SCALE, SCALE)))
+	panel = pygame.image.load("panel.png").convert_alpha()
+	loading(2)
+
 	clock = pygame.time.Clock()
 	going = True
 	level = 0
@@ -302,6 +314,18 @@ def main():
 	projectiles = pygame.sprite.RenderClear([])
 	bars = pygame.sprite.RenderClear([])
 	things = [enemies, towers, projectiles, bars]
+	loading(3)
+
+	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png"))
+	loading(4)
+	colours = ["red", "green", "blue", "black"]
+	imgload(["saw_" + c + "_1.png" for c in colours])
+	imgload(["saw_" + c + "_2.png" for c in colours])
+
+	screen.fill((255, 0, 228))
+	screen.blit(background, (0, 0))
+	screen.blit(panel, (1088, 0))
+	pygame.display.flip()
 
 	what_to_build = Krisseh
 	while going and lives > 0:
