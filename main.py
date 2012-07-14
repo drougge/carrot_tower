@@ -176,8 +176,14 @@ class Enemy(Sprite):
 class Chainsaw(Enemy):
 	animate = 2
 	bounty = 5
-	def __init__(self, x, y, colour, life, mx, my):
-		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
+	def __init__(self, x, y, colour, life, mx, my, flashy=False):
+		if flashy:
+			imgs = []
+			for colour in ["red", "black", "green", "blue"]:
+				imgs += ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2] * 2
+		else:
+			imgs = ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2]
+		Enemy.__init__(self, imgs, x, y, [mx, my])
 		self.life = self.max_life = life
 
 class Ext(Enemy):
@@ -190,7 +196,7 @@ class Ext(Enemy):
 class SmartChainsaw(Chainsaw):
 	bounty = 15
 	def __init__(self, *a):
-		Chainsaw.__init__(self, *a)
+		Chainsaw.__init__(self, *a, flashy=True)
 		self._choices = [2, 2, 2, 1, 2]
 		self._wait = 0
 		self._soon = 0
@@ -295,6 +301,7 @@ def game_over():
 	
 
 def loading(nr):
+	return
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
 	zx, zy = loading_text.get_size()
 	screen.blit(loading_text, (1200 - zx, 700 - zy))
@@ -326,7 +333,7 @@ def main():
 	level = 0
 	lives = 13
 	money = 1000
-	spawn_countdown = 60
+	spawn_countdown = 6
 	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
