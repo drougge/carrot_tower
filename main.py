@@ -311,12 +311,16 @@ def spawn():
 	spawns = [(Chainsaw, 3, "green", 3),
 	          (Chainsaw, 5, "blue", 4),
 	          (Chainsaw, 7, "red", 5),
+	          (Ext, 1, "pink", 36),
 	          (Chainsaw, 7, "blue", 7),
 	          (Chainsaw, 4, "red", 10),
 	          (SmartChainsaw, 1, "black", 23),
 	          (Chainsaw, 5, "pink", 14),
 	          (Chainsaw, 8, "green", 17),
-	          (Ext, 1, "pink", 42),
+	          (Ext, 1, "pink", 360),
+	          (Chainsaw, 7, "blue", 20),
+	          (Chainsaw, 4, "red", 24),
+	          (SmartChainsaw, 2, "black", 33),
 	         ]
 
 	if level < len(spawns):
