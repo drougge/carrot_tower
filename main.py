@@ -15,12 +15,6 @@ collcmp = pygame.sprite.collide_circle_ratio(0.6)
 collcmp = pygame.sprite.collide_mask
 _images = {}
 
-pygame.mixer.init(44100, -16, 2, 2048)
-_snd_death = pygame.mixer.Sound("trollandi_death.wav")
-_snd_woop = pygame.mixer.Sound("rajula_woop.wav")
-_snd_cucumber = pygame.mixer.Sound("cucumber.wav")
-_snd_carrot = pygame.mixer.Sound("carrot.wav")
-_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 def imgload(names):
 	for name in names:
@@ -375,6 +369,13 @@ def main():
 	loading_text = font.render("Loading", True, (0,0,0))
 	pygame.event.get()
 	loading(1)
+
+	pygame.mixer.init(44100, -16, 2, 2048)
+	_snd_death = pygame.mixer.Sound("trollandi_death.wav")
+	_snd_woop = pygame.mixer.Sound("rajula_woop.wav")
+	_snd_cucumber = pygame.mixer.Sound("cucumber.wav")
+	_snd_carrot = pygame.mixer.Sound("carrot.wav")
+	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 	background0 = pygame.image.load("map1.png").convert_alpha()
 	background = pygame.transform.scale(background0, map(mul, background0.get_size(), (SCALE, SCALE)))
