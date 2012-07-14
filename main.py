@@ -248,11 +248,23 @@ class Box(Sprite):
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 
-def build(what_to_build, position):
+def build(what_to_build, position, cost=None):
 	global money
-	if money >= what_to_build.cost:
-		towers.add(what_to_build(position[0], position[1]))
-		money -= what_to_build.cost
+	if cost == None:
+		cost = what_to_build.cost
+	if money >= cost:
+		towers.add(what_to_build(position[0]*64+32, position[1]*64+32))
+		money -= cost
+
+def upgrade(tower, what_to_build):
+	global money
+	if money >= (what_to_build.cost - tower.cost):
+		pos = int(tower._pos[0] / 64), int(tower._pos[1] / 64)
+		towers.remove(tower)
+		cost = what_to_build.cost - tower.cost
+		if cost < 0:
+			cost = 0
+		build(what_to_build, pos, cost)
 
 def lose_life():
 	global lives, going, _snd_death
@@ -409,7 +421,13 @@ def main():
 					what_to_build = Krisseh
 				if event.button == 3:
 					what_to_build = Agurka
-				build(what_to_build, (ruta[0]*64+32, ruta[1]*64+32))
+				upgrade_done = False
+				for t in towers:
+					if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
+						upgrade(t, what_to_build)
+						upgrade_done = True
+				if not upgrade_done:
+					build(what_to_build, (ruta[0], ruta[1]))
 			elif event.type == MOUSEMOTION:
 				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
 				print "ruta " + str(ruta[0]) + ", " + str(ruta[1])
