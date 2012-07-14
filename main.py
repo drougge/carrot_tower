@@ -366,9 +366,10 @@ def main():
 					what_to_build = Agurka
 					build(what_to_build, (event.pos[0], event.pos[1]))
 			elif event.type == MOUSEMOTION:
-				position = event.pos
+				rutnummer_x = event.pos[0] / 64
+				rutnummer_y = event.pos[1] / 64
 				hilight_box.empty()
-				hilight_box.add(Box(position[0], position[1]))
+				hilight_box.add(Box(rutnummer_x * 64, rutnummer_y*64))
 				print "move " + str(event.pos[0]) + ", " + str(event.pos[1])
 	pygame.quit()
 
