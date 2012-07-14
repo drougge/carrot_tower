@@ -302,7 +302,7 @@ def spawn():
 	if level < len(spawns):
 		enemy, count, colour, life = spawns[level]
 	else:
-		enemy, count, colour, life = SmartChainsaw, 1000000, "black", 128
+		enemy, count, colour, life = Chainsaw, 6, "pink", level*2
 	spawned_on_this_level += 1
 	print u"spåvnat: " + str(spawned_on_this_level)
 	enemies.add(enemy(1071, 79, colour, life, -4, 0))
