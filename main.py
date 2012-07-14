@@ -142,14 +142,17 @@ class Enemy(Sprite):
 	pathy = True
 	life = 1
 	max_life = 1
+	bounty = 0
 	def __init__(self, *a):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 	def im_hit(self, p):
+		global money
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
 			enemies.remove(self)
+			money += self.bounty
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
@@ -159,6 +162,7 @@ class Enemy(Sprite):
 
 class Chainsaw(Enemy):
 	animate = 2
+	bounty = 5
 	def __init__(self, x, y, colour, life, mx, my):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 		self.life = self.max_life = life
