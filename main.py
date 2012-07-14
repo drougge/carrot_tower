@@ -141,9 +141,10 @@ class SuperKrisseh(Tower):
 
 class ExtTower(Tower):
 	cost = 600
-	damage = 10
+	damage = 12
 	interval = 8
 	fire_anim_interval = 4
+	range = 200
 	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
 
 class Life(Sprite):
