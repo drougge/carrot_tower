@@ -80,6 +80,7 @@ class Tower(Sprite):
 	time_since_last_fire = 0
 	cost = 150
 	sprite_filenames = ("saw_red_1.png", )
+	__anim = 0
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 		self._fired = False
@@ -95,19 +96,6 @@ class Tower(Sprite):
 					closest_dist = dist
 			if closest_dist <= self.range:
 				self.fire(closest_enemy, closest_dist)
-	def fire(self, enemy, dist):
-		self.time_since_last_fire = 0
-		dist = ceil(dist / SCALE * 0.95)
-		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
-		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
-		self._fired = True
-
-class Krisseh(Tower):
-	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
-	__anim = 0
-	_offset = (0, -32)
-	def update(self):
-		Tower.update(self)
 		if self._fired:
 			self.__anim = 1
 			self._fired = False
@@ -117,6 +105,16 @@ class Krisseh(Tower):
 				self._newimg(True)
 				if self._cur_img:
 					self.__anim = 10
+	def fire(self, enemy, dist):
+		self.time_since_last_fire = 0
+		dist = ceil(dist / SCALE * 0.95)
+		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
+		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range))
+		self._fired = True
+
+class Krisseh(Tower):
+	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	_offset = (0, -32)
 
 class Chainsaw(Sprite):
 	pathy = True
