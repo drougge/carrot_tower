@@ -191,7 +191,7 @@ class SmartChainsaw(Chainsaw):
 	bounty = 15
 	def __init__(self, *a):
 		Chainsaw.__init__(self, *a)
-		self._choices = [2, 2, 1, 2]
+		self._choices = [2, 2, 2, 1, 2]
 		self._wait = 0
 		self._soon = 0
 	def _pathify(self, z):
