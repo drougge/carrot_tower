@@ -223,12 +223,19 @@ def lose_life():
 spawned_on_this_level = 0
 def spawn():
 	global level, spawned_on_this_level, spawn_countdown
-	spawns = [(3, "green", 3), (5, "blue", 4), (7, "red", 5), (7, "blue", 7), (4, "red", 10), (1, "black", 23), (5, "red", 14)]
+	spawns = [(Chainsaw, 3, "green", 3),
+	          (Chainsaw, 5, "blue", 4),
+	          (Chainsaw, 7, "red", 5),
+	          (Chainsaw, 7, "blue", 7),
+	          (Chainsaw, 4, "red", 10),
+	          (SmartChainsaw, 1, "black", 23),
+	          (Chainsaw, 5, "red", 14)
+	         ]
 
-	count, colour, life = spawns[level]
+	enemy, count, colour, life = spawns[level]
 	spawned_on_this_level += 1
 	print "spånat: " + str(spawned_on_this_level)
-	enemies.add(SmartChainsaw(1071, 79, colour, life, -4, 0))
+	enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
 	if spawned_on_this_level >= count:
 		print "OMFG LELVE"
