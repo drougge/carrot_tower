@@ -17,6 +17,8 @@ _images = {}
 pygame.mixer.init(44100, -16, 2, 2048)
 _snd_death = pygame.mixer.Sound("trollandi_death.wav")
 _snd_woop = pygame.mixer.Sound("rajula_woop.wav")
+_snd_cucumber = pygame.mixer.Sound("cucumber.wav")
+_snd_carrot = pygame.mixer.Sound("carrot.wav")
 
 def imgload(names):
 	for name in names:
@@ -144,13 +146,13 @@ class Enemy(Sprite):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 	def im_hit(self, p):
-		global money, _snd_woop
+		global money, _snd_carrot
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
 			enemies.remove(self)
 			money += self.bounty
-			_snd_woop.play()
+			_snd_carrot.play()
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
