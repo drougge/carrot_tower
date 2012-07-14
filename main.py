@@ -130,6 +130,11 @@ class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 	_offset = (0, -32)
 
+class ExtTower(Tower):
+	cost = 600
+	damage = 10
+	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
+
 class Life(Sprite):
 	def __init__(self, enemy):
 		Sprite.__init__(self, _lifeimgs, *enemy._pos)
@@ -413,7 +418,7 @@ def main():
 				if event.button == 1:
 					what_to_build = Krisseh
 				if event.button == 3:
-					what_to_build = Agurka
+					what_to_build = ExtTower
 				upgrade_done = False
 				for t in towers:
 					if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
