@@ -131,8 +131,8 @@ class Krisseh(Tower):
 
 class SuperKrisseh(Tower):
 	cost = 800
-	damage = 4
-	interval = 4
+	damage = 2
+	interval = 8
 	range = 120
 	sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png")
 	_offset = (0, -32)
@@ -145,8 +145,8 @@ class Pringles(Tower):
 	sprite_filenames = ("pringles_1.png", "pringles_2.png", "pringles_1.png", "pringles_3.png")
 
 class ExtTower(Tower):
-	cost = 600
-	damage = 12
+	cost = 900
+	damage = 4
 	interval = 8
 	fire_anim_interval = 4
 	range = 200
@@ -389,7 +389,7 @@ def main():
 	level = 0
 	lives = 13
 	money = 1000
-	spawn_countdown = 6
+	spawn_countdown = 600
 	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
