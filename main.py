@@ -248,6 +248,9 @@ class Box(Sprite):
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 
+class Knappy(Sprite):
+	pass
+
 def build(what_to_build, position, cost=None):
 	global money
 	if cost == None:
@@ -350,8 +353,8 @@ def main():
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
 	bars = pygame.sprite.RenderClear([])
-	hilight_box = pygame.sprite.RenderClear([])
-	things = [enemies, towers, projectiles, bars, hilight_box]
+	hilight_box = Box(32, 32)
+	things = [enemies, towers, projectiles, bars, pygame.sprite.RenderClear([hilight_box])]
 	loading(3)
 
 	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "box.png"))
@@ -367,6 +370,11 @@ def main():
 	half = _images["hat_krisseh_half.png"]
 	for i in range(360):
 		full[i] = (full[i][0], half[i][1])
+
+	knapps = []
+	for y, fn in enumerate(("hat.png", "agurk.png")):
+		knapps.append(Knappy((fn,), 1184, 332 + 80 * y))
+	things.append(pygame.sprite.RenderClear(knapps))
 
 	screen.fill((255, 0, 228))
 	screen.blit(background, (0, 0))
@@ -417,22 +425,27 @@ def main():
 			elif event.type == KEYDOWN and event.key == K_RETURN:
 				spawn_countdown = 0
 			elif event.type == MOUSEBUTTONUP:
-				if event.button == 1:
-					what_to_build = Krisseh
-				if event.button == 3:
-					what_to_build = Agurka
+#				if event.button == 1:
+#					what_to_build = Krisseh
+#				if event.button == 3:
+#					what_to_build = Agurka
 				upgrade_done = False
-				for t in towers:
-					if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
-						upgrade(t, what_to_build)
-						upgrade_done = True
-				if not upgrade_done:
-					build(what_to_build, (ruta[0], ruta[1]))
+				if ruta[0] > 16: # panel
+					if ruta == (18, 5):
+						what_to_build = Krisseh
+					elif ruta == (18, 6):
+						what_to_build = Agurka
+				else:
+					for t in towers:
+						if int(t._pos[0] / 64) == ruta[0] and int(t._pos[1] / 64) == ruta[1]:
+							upgrade(t, what_to_build)
+							upgrade_done = True
+					if not upgrade_done:
+						build(what_to_build, (ruta[0], ruta[1]))
 			elif event.type == MOUSEMOTION:
 				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
 				print "ruta " + str(ruta[0]) + ", " + str(ruta[1])
-				hilight_box.empty()
-				hilight_box.add(Box(ruta[0] * 64 + 32, ruta[1] * 64 + 32))
+				hilight_box._pos = (ruta[0] * 64 + 32, ruta[1] * 64 + 32)
 	pygame.quit()
 
 if __name__ == "__main__":
