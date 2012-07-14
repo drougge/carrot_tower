@@ -14,6 +14,10 @@ speed = 60
 collcmp = pygame.sprite.collide_circle_ratio(0.6)
 _images = {}
 
+pygame.mixer.init(44100, -16, 2, 2048)
+_snd_death = pygame.mixer.Sound("trollandi_death.wav")
+_snd_woop = pygame.mixer.Sound("rajula_woop.wav")
+
 def imgload(names):
 	for name in names:
 		if name not in _images:
@@ -135,14 +139,18 @@ class Life(Sprite):
 class Enemy(Sprite):
 	life = 1
 	max_life = 1
+	bounty = 0
 	def __init__(self, *a):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 	def im_hit(self, p):
+		global money, _snd_woop
 		print "I'm hit!", self.life
 		self.life -= p.damage
 		if self.life <= 0:
 			enemies.remove(self)
+			money += self.bounty
+			_snd_woop.play()
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
@@ -160,6 +168,7 @@ class Enemy(Sprite):
 
 class Chainsaw(Enemy):
 	animate = 2
+	bounty = 5
 	def __init__(self, x, y, colour, life, mx, my):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 		self.life = self.max_life = life
@@ -214,9 +223,10 @@ def build(what_to_build, position):
 		money -= what_to_build.cost
 
 def lose_life():
-	global lives, going
+	global lives, going, _snd_death
 	print "DEATH!!!"
 	lives -= 1
+	_snd_death.play()
 	if lives < 1:
 		game_over()
 
@@ -253,6 +263,7 @@ def game_over():
 	going = False
 	
 def main():
+	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
