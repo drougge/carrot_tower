@@ -118,11 +118,20 @@ class Krisseh(Tower):
 				if self._cur_img:
 					self.__anim = 10
 
-class Chainsaw(Sprite):
+class Enemy(Sprite):
+	life = 1
+	def im_hit(self, p):
+		print "I'm hit!", self.life
+		self.life -= p.damage
+		if self.life <= 0:
+			enemies.remove(self)
+
+class Chainsaw(Enemy):
 	pathy = True
 	animate = 2
+	life = 3
 	def __init__(self, x, y, colour, mx, my):
-		Sprite.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
+		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
@@ -131,13 +140,16 @@ class Chainsaw(Sprite):
 			enemies.remove(self)
 
 
-class Carrot(Sprite):
+class Weapon(Sprite):
+	damage = 1
+
+class Carrot(Weapon):
 	max_speed=8
 	def __init__(self, x, y, target_position, range):
 		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
-		Sprite.__init__(self, ("carrot.png",), x, y, map(div, posdiff, (s, s)))
+		Weapon.__init__(self, ("carrot.png",), x, y, map(div, posdiff, (s, s)))
 		self._range = range
 
 	def update(self):
@@ -227,6 +239,11 @@ def main():
 		screen.blit(level_render, (1280-16-level_render.get_size()[0], 35+28))
 		screen.blit(next_render, (1280-16-next_render.get_size()[0], 35+28+28))
 		#screen.blit(lives_render, (1110, 25))
+
+		for e in list(enemies):
+			for c in pygame.sprite.spritecollide(e, projectiles, False, collcmp):
+				projectiles.remove(c)
+				e.im_hit(c)
 
 		for thing in things:
 			thing.update()
