@@ -21,6 +21,15 @@ def imgload(names):
 			_images[name] = dict([(deg, pygame.transform.rotate(img, deg)) for deg in range(0, 360)])
 	return [_images[name] for name in names]
 
+_lifeimgs = []
+for i in range(17):
+	bar = pygame.Surface((16, 3))
+	bar.fill((255, 0, 0))
+	bar.fill((0, 255, 0), pygame.rect.Rect(0, 0, i, 3))
+	n = "life" + str(i)
+	_images[n] = {0: bar}
+	_lifeimgs.append(n)
+
 class Sprite(pygame.sprite.Sprite):
 	pathy = False
 	animate = False
@@ -116,9 +125,24 @@ class Krisseh(Tower):
 	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
 	_offset = (0, -32)
 
+class Life(Sprite):
+	def __init__(self, enemy):
+		Sprite.__init__(self, _lifeimgs, *enemy._pos)
+		self._enemy = enemy
+	def update(self):
+		e = self._enemy
+		self._pos = e._pos[0], e._pos[1] - 18
+		left = int((float(e.life) / e.max_life) * 16)
+		self._cur_img = left
+		Sprite.update(self)
+
 class Enemy(Sprite):
 	pathy = True
 	life = 1
+	max_life = 1
+	def __init__(self, *a):
+		Sprite.__init__(self, *a)
+		bars.add(Life(self))
 	def im_hit(self, p):
 		print "I'm hit!", self.life
 		self.life -= p.damage
@@ -135,7 +159,7 @@ class Chainsaw(Enemy):
 	animate = 2
 	def __init__(self, x, y, colour, life, mx, my):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
-		self.life = life
+		self.life = self.max_life = life
 
 
 class Weapon(Sprite):
@@ -195,7 +219,7 @@ def game_over():
 	going = False
 	
 def main():
-	global background, background0, screen, enemies, towers, projectiles, money, lives, going, level, spawn_countdown
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (without Rajula)")
 	background0 = pygame.image.load("map1.png").convert_alpha()
@@ -215,7 +239,8 @@ def main():
 	enemies = pygame.sprite.RenderClear([])
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
-	things = [enemies, towers, projectiles]
+	bars = pygame.sprite.RenderClear([])
+	things = [enemies, towers, projectiles, bars]
 
 	what_to_build = Krisseh
 	while going and lives > 0:
