@@ -133,9 +133,9 @@ class Enemy(Sprite):
 
 class Chainsaw(Enemy):
 	animate = 2
-	life = 3
-	def __init__(self, x, y, colour, mx, my):
+	def __init__(self, x, y, colour, life, mx, my):
 		Enemy.__init__(self, ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2], x, y, [mx, my])
+		self.life = life
 
 
 class Weapon(Sprite):
@@ -172,14 +172,14 @@ def lose_life():
 spawned_on_this_level = 0
 def spawn():
 	global level, spawned_on_this_level, spawn_countdown
-	spawns = (3, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7)
-	saw_colors = (["red", "blue"] * 30)
+	spawns = [(3, "red", 3), (5, "blue", 4)] + [(7, "red", 5), (7, "blue", 5)] * 30
 
+	count, colour, life = spawns[level]
 	spawned_on_this_level += 1
 	print "spånat: " + str(spawned_on_this_level)
-	enemies.add(Chainsaw(1071, 79, saw_colors[level], -4, 0))
+	enemies.add(Chainsaw(1071, 79, colour, life, -4, 0))
 
-	if spawned_on_this_level >= spawns[level]:
+	if spawned_on_this_level >= count:
 		print "OMFG LELVE"
 		level += 1
 		spawned_on_this_level = 0
