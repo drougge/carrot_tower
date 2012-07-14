@@ -150,8 +150,10 @@ class ExtTower(Tower):
 	interval = 8
 	fire_anim_interval = 4
 	range = 200
-	fire_sound = _snd_blurgh
 	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
+	def __init__(self, *a):
+		Tower.__init__(self, *a)
+		self.fire_sound = _snd_blurgh
 
 class Life(Sprite):
 	def __init__(self, enemy):
@@ -360,6 +362,7 @@ def select_tower(what, img):
 def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
+	global _snd_blurgh
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
