@@ -388,16 +388,14 @@ def main():
 			elif event.type == MOUSEBUTTONUP:
 				if event.button == 1:
 					what_to_build = Krisseh
-					build(what_to_build, (event.pos[0], event.pos[1]))
 				if event.button == 3:
 					what_to_build = Agurka
-					build(what_to_build, (event.pos[0], event.pos[1]))
+				build(what_to_build, (ruta[0]*64+32, ruta[1]*64+32))
 			elif event.type == MOUSEMOTION:
-				rutnummer_x = event.pos[0] / 64
-				rutnummer_y = event.pos[1] / 64
+				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
+				print "ruta " + str(ruta[0]) + ", " + str(ruta[1])
 				hilight_box.empty()
-				hilight_box.add(Box(rutnummer_x * 64, rutnummer_y*64))
-				print "move " + str(event.pos[0]) + ", " + str(event.pos[1])
+				hilight_box.add(Box(ruta[0] * 64 + 32, ruta[1] * 64 + 32))
 	pygame.quit()
 
 if __name__ == "__main__":
