@@ -382,7 +382,10 @@ def main():
 	things = [enemies, towers, projectiles, bars, pygame.sprite.RenderClear([hilight_box])]
 	loading(3)
 
-	imgload(("agurk.png", "carrot.png", "hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png", "superkrisseh_full.png", "superkrisseh_half.png", "box.png"))
+	imgload(("agurk.png", "carrot.png", "box.png"))
+	imgload(("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png"))
+	imgload(("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png"))
+	imgload(("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png"))
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
 	imgload(["saw_" + c + "_1.png" for c in colours])
@@ -401,14 +404,15 @@ def main():
 		full[i] = (full[i][0], half[i][1])
 
 	knapps = []
-	for y, fn in ((332, "hat.png"), (396, "superhat.png"), (476, "agurk.png")):
+	for y, fn in ((336, "hat.png"), (400, "superhat.png"), (480, "exttower_1.png"), (544, "agurk.png")):
 		knapps.append(Knappy((fn,), 1184, y))
 	mouse = Mouse(["hat.png"], 0, 0)
 	things.append(pygame.sprite.RenderClear(knapps + [mouse]))
 
 	buttons = {(18, 5): (Krisseh, "hat.png"),
 	           (18, 6): (SuperKrisseh, "superhat.png"),
-	           (18, 7): (Agurka, "agurk.png"),
+	           (18, 7): (ExtTower, "exttower_1.png"),
+	           (18, 8): (Agurka, "agurk.png"),
 	          }
 	select_tower(*buttons[(18, 5)])
 
