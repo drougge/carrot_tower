@@ -95,6 +95,7 @@ class Tower(Sprite):
 	damage = 2
 	sprite_filenames = ("hat.png", )
 	__anim = 0
+	fire_anim_interval = 10
 	def __init__(self, x, y):
 		Sprite.__init__(self, self.sprite_filenames, x, y)
 		self._fired = False
@@ -118,7 +119,7 @@ class Tower(Sprite):
 			if not self.__anim:
 				self._newimg(True)
 				if self._cur_img:
-					self.__anim = 10
+					self.__anim = self.fire_anim_interval
 	def fire(self, enemy, dist):
 		self.time_since_last_fire = 0
 		dist = ceil(dist / SCALE * 1.95)
@@ -133,6 +134,8 @@ class Krisseh(Tower):
 class ExtTower(Tower):
 	cost = 600
 	damage = 10
+	interval = 8
+	fire_anim_interval = 4
 	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
 
 class Life(Sprite):
