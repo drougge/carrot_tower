@@ -238,14 +238,13 @@ def main():
 		screen.blit(next_render, (1280-16-next_render.get_size()[0], 35+28+28))
 		#screen.blit(lives_render, (1110, 25))
 
+		for thing in things:
+			thing.update()
+			thing.draw(screen)
 		for e in list(enemies):
 			for c in pygame.sprite.spritecollide(e, projectiles, False, collcmp):
 				projectiles.remove(c)
 				e.im_hit(c)
-
-		for thing in things:
-			thing.update()
-			thing.draw(screen)
 		pygame.display.flip()
 		for thing in things:
 			thing.clear(screen, background)
