@@ -366,7 +366,7 @@ def main():
 	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
 	global _snd_death, _snd_blurgh
-	screen = pygame.display.set_mode((WIDTH, HEIGHT), 0)# FULLSCREEN)
+	screen = pygame.display.set_mode((WIDTH, HEIGHT), FULLSCREEN)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
 	pygame.font.init()
