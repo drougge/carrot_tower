@@ -362,11 +362,11 @@ def select_tower(what, img):
 	what_to_build = what
 	mouse._imgs = imgload([img])
 
-def main():
+def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
 	global _snd_death, _snd_blurgh
-	screen = pygame.display.set_mode((WIDTH, HEIGHT), FULLSCREEN)
+	screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
 	pygame.font.init()
@@ -511,4 +511,10 @@ def main():
 	pygame.quit()
 
 if __name__ == "__main__":
-	main()
+	from sys import argv
+	flags = 0
+	if "-f" in argv: flags = FULLSCREEN
+	if "-h" in argv:
+		print "-f for FULLSCREEn, no other options"
+	else:
+		main(flags)
