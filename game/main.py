@@ -11,10 +11,8 @@ WIDTH, HEIGHT = 1280, 720 # damn projector
 SCALE = 32
 speed = 60
 
-collcmp = pygame.sprite.collide_circle_ratio(0.6)
 collcmp = pygame.sprite.collide_mask
 _images = {}
-
 
 def imgload(names):
 	for name in names:
@@ -36,7 +34,7 @@ for i in range(17):
 	_lifeimgs.append(n)
 
 class Sprite(pygame.sprite.Sprite):
-	animate = False
+	_animate = False
 	_offset = (0, 0)
 	def __init__(self, imgs, x, y, move=False):
 		pygame.sprite.Sprite.__init__(self)
@@ -63,9 +61,9 @@ class Sprite(pygame.sprite.Sprite):
 	def _setrot(self):
 		self._rot = int(degrees(atan2(*self._move)) - 90) % 360
 	def _newimg(self, force=False):
-		if self.animate:
+		if self._animate:
 			self._anim += 1
-		if force or self.animate is self._anim:
+		if force or self._animate is self._anim:
 			self._anim = 0
 			self._cur_img += 1
 			self._cur_img %= len(self._imgs)
@@ -83,29 +81,29 @@ class Sprite(pygame.sprite.Sprite):
 		self.rect = pygame.rect.Rect(x - xz + xo, y - yz + yo, xz * 2, yz * 2)
 
 class Tower(Sprite):
-	range = 100
-	interval = 16
-	time_since_last_fire = 0
-	cost = 150
-	damage = 2
-	sprite_filenames = ("hat.png", )
+	_range = 100
+	_interval = 16
+	_time_since_last_fire = 0
+	_cost = 150
+	_damage = 2
+	_sprite_filenames = ("hat.png",)
 	__anim = 0
-	fire_anim_interval = 10
-	fire_sound = None
+	_fire_anim_interval = 10
+	_fire_sound = None
 	def __init__(self, x, y):
-		Sprite.__init__(self, self.sprite_filenames, x, y)
+		Sprite.__init__(self, self._sprite_filenames, x, y)
 		self._fired = False
 	def update(self):
 		Sprite.update(self)
-		self.time_since_last_fire += 1
-		if self.time_since_last_fire >= self.interval:
+		self._time_since_last_fire += 1
+		if self._time_since_last_fire >= self._interval:
 			closest_dist = 100000 # Lots!
 			for e in enemies:
 				dist = hypot(*map(sub, self._pos, e._pos))
 				if dist < closest_dist:
 					closest_enemy = e
 					closest_dist = dist
-			if closest_dist <= self.range:
+			if closest_dist <= self._range:
 				self.fire(closest_enemy, closest_dist)
 		if self._fired:
 			self.__anim = 1
@@ -115,45 +113,45 @@ class Tower(Sprite):
 			if not self.__anim:
 				self._newimg(True)
 				if self._cur_img:
-					self.__anim = self.fire_anim_interval
+					self.__anim = self._fire_anim_interval
 	def fire(self, enemy, dist):
-		self.time_since_last_fire = 0
+		self._time_since_last_fire = 0
 		dist = ceil(dist / SCALE * 3)
 		epos = map(add, enemy._pos, map(mul, enemy._move, (dist, dist)))
-		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self.range, self.damage))
+		projectiles.add(Carrot(self._pos[0], self._pos[1], epos, self._range, self._damage))
 		self._fired = True
-		if self.fire_sound:
-			self.fire_sound.play()
+		if self._fire_sound:
+			self._fire_sound.play()
 
 class Krisseh(Tower):
-	sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png")
+	_sprite_filenames = ("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png",)
 	_offset = (0, -32)
 
 class SuperKrisseh(Tower):
-	cost = 800
-	damage = 2
-	interval = 8
-	range = 120
-	sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png")
+	_cost = 800
+	_damage = 2
+	_interval = 8
+	_range = 120
+	_sprite_filenames = ("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png",)
 	_offset = (0, -32)
 
 class Pringles(Tower):
-	cost = 650
-	damage = 50
-	interval = 64
-	range = 400
-	sprite_filenames = ("pringles_1.png", "pringles_2.png", "pringles_1.png", "pringles_3.png")
+	_cost = 650
+	_damage = 50
+	_interval = 64
+	_range = 400
+	_sprite_filenames = ("pringles_1.png", "pringles_2.png", "pringles_1.png", "pringles_3.png",)
 
 class ExtTower(Tower):
-	cost = 900
-	damage = 4
-	interval = 8
-	fire_anim_interval = 4
-	range = 200
-	sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png")
+	_cost = 900
+	_damage = 4
+	_interval = 8
+	_fire_anim_interval = 4
+	_range = 200
+	_sprite_filenames = ("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png",)
 	def __init__(self, *a):
 		Tower.__init__(self, *a)
-		self.fire_sound = _snd_blurgh
+		self._fire_sound = _snd_blurgh
 
 class Life(Sprite):
 	def __init__(self, enemy):
@@ -162,26 +160,25 @@ class Life(Sprite):
 	def update(self):
 		e = self._enemy
 		self._pos = e._pos[0], e._pos[1] - 18
-		left = int((float(e.life) / e.max_life) * 16)
+		left = int((float(e._life) / e._max_life) * 16)
 		self._cur_img = max(left, 0)
 		Sprite.update(self)
 		if e not in enemies:
 			self.kill()
 
 class Enemy(Sprite):
-	life = 1
-	max_life = 1
-	bounty = 0
+	_life = 1
+	_max_life = 1
+	_bounty = 0
 	def __init__(self, *a):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 	def im_hit(self, p, snd):
 		global money, _snd_carrot
-		print "I'm hit!", self.life
-		self.life -= p.damage
-		if self.life <= 0:
+		self._life -= p._damage
+		if self._life <= 0:
 			self.kill()
-			money += int(self.bounty * level * 0.5)
+			money += int(self._bounty * level * 0.5)
 			snd.play()
 	def update(self):
 		Sprite.update(self)
@@ -199,8 +196,8 @@ class Enemy(Sprite):
 		self._setrot()
 
 class Chainsaw(Enemy):
-	animate = 2
-	bounty = 5
+	_animate = 2
+	_bounty = 5
 	def __init__(self, x, y, colour, life, mx, my, flashy=False):
 		if flashy:
 			imgs = []
@@ -209,17 +206,17 @@ class Chainsaw(Enemy):
 		else:
 			imgs = ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2]
 		Enemy.__init__(self, imgs, x, y, [mx, my])
-		self.life = self.max_life = life
+		self._life = self._max_life = life
 
 class Ext(Enemy):
-	animate = 2
-	bounty = 50
+	_animate = 2
+	_bounty = 50
 	def __init__(self, x, y, colour, life, mx, my):
 		Enemy.__init__(self, ["ext_" + str(n) + ".png" for n in 1,2,3,4,3,2], x, y, [mx, my])
-		self.life = self.max_life = life
+		self._life = self._max_life = life
 
 class SmartChainsaw(Chainsaw):
-	bounty = 15
+	_bounty = 15
 	def __init__(self, *a):
 		Chainsaw.__init__(self, *a, flashy=True)
 		self._choices = [2, 2, 2, 1, 2]
@@ -245,19 +242,17 @@ class SmartChainsaw(Chainsaw):
 		self._setrot()
 
 class Weapon(Sprite):
-	damage = 1
+	_damage = 1
 
 class Carrot(Weapon):
 	max_speed=8
-	def __init__(self, x, y, target_position, range, damage=None):
-		if damage is None:
-			damage = Weapon.damage
-		self.damage = damage
+	def __init__(self, x, y, target_position, _range, damage=Weapon._damage):
+		self._damage = damage
 		posdiff = map(sub, target_position, (x, y))
 		h = hypot(*posdiff)
 		s = h / self.max_speed
 		Weapon.__init__(self, ("carrot.png",), x, y, map(div, posdiff, (s, s)))
-		self._range = range
+		self._range = _range
 
 	def update(self):
 		Sprite.update(self)
@@ -266,15 +261,15 @@ class Carrot(Weapon):
 			self.kill()
 
 class Agurka(Weapon):
-	cost = 40
-	damage = 50
+	_cost = 40
+	_damage = 50
 	def __init__(self, x, y):
 		Weapon.__init__(self, ("agurk.png",), x, y)
 
 class Box(Sprite):
-	sprite_filenames = "box.png", 
+	_sprite_filenames = ("box.png",)
 	def __init__(self, x, y):
-		Sprite.__init__(self, self.sprite_filenames, x, y)
+		Sprite.__init__(self, self._sprite_filenames, x, y)
 
 class Knappy(Sprite):
 	pass
@@ -282,19 +277,17 @@ class Knappy(Sprite):
 def build(what_to_build, position, cost=None):
 	global money
 	if cost == None:
-		cost = what_to_build.cost
+		cost = what_to_build._cost
 	if money >= cost:
 		towers.add(what_to_build(position[0]*64+32, position[1]*64+32))
 		money -= cost
 
 def upgrade(tower, what_to_build):
 	global money
-	if money >= (what_to_build.cost - tower.cost):
+	if money >= (what_to_build._cost - tower._cost):
 		pos = int(tower._pos[0] / 64), int(tower._pos[1] / 64)
 		towers.remove(tower)
-		cost = what_to_build.cost - tower.cost
-		if cost < 0:
-			cost = 0
+		cost = max(what_to_build._cost - tower._cost, 0)
 		build(what_to_build, pos, cost)
 
 def lose_life():
@@ -515,6 +508,6 @@ if __name__ == "__main__":
 	flags = 0
 	if "-f" in argv: flags = FULLSCREEN
 	if "-h" in argv:
-		print "-f for FULLSCREEn, no other options"
+		print "-f for FULLSCREEN, no other options"
 	else:
 		main(flags)
