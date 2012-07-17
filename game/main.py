@@ -345,7 +345,10 @@ def loading(nr):
 	for i in range(36):
 		pygame.display.flip()
 		clock.tick(speed)
-		pygame.event.get()
+		for event in pygame.event.get():
+			if (event.type == QUIT) or (event.type == KEYDOWN and event.key == K_ESCAPE):
+				pygame.quit()
+				raise Exception("Loading aborted")
 
 class Mouse(Sprite):
 	pass
@@ -359,6 +362,7 @@ def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
 	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
 	global _snd_death, _snd_blurgh
+	pygame.display.init()
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
 	pygame.display.set_caption("Carrot Tower (with some Rajula)")
 
@@ -367,7 +371,6 @@ def main(flags):
 
 	font = pygame.font.SysFont("Verdana", 128, True)
 	loading_text = font.render("Loading", True, (0,0,0))
-	pygame.event.get()
 	loading(1)
 
 	pygame.mixer.init(44100, -16, 2, 2048)
