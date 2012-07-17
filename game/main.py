@@ -391,8 +391,7 @@ def main(flags):
 	towers = pygame.sprite.RenderClear([])
 	projectiles = pygame.sprite.RenderClear([])
 	bars = pygame.sprite.RenderClear([])
-	hilight_box = Box(32, 32)
-	things = [enemies, towers, projectiles, bars, pygame.sprite.RenderClear([hilight_box])]
+	things = [enemies, towers, projectiles, bars]
 	loading(3)
 
 	imgload(("carrot.png",))
@@ -417,8 +416,11 @@ def main(flags):
 	knapps = []
 	for y, fn in ((336, "hat.png"), (400, "superhat.png"), (480, "exttower_1.png"), (544, "pringles_1.png"), (608, "agurk.png")):
 		knapps.append(Knappy((fn,), 1184, y))
-	mouse = Mouse(["hat.png"], 0, 0)
-	things.append(pygame.sprite.RenderClear(knapps + [mouse]))
+	things.append(pygame.sprite.RenderClear(knapps))
+	mouse = Mouse(["hat.png"], 10000, 0)
+	things.append(pygame.sprite.RenderClear([mouse]))
+	hilight_box = Box(10000, 0)
+	things.append(pygame.sprite.RenderClear([hilight_box]))
 
 	buttons = {(18, 5): (Krisseh, "hat.png"),
 	           (18, 6): (SuperKrisseh, "superhat.png"),
@@ -477,7 +479,7 @@ def main(flags):
 				spawn_countdown = 0
 			elif event.type == MOUSEBUTTONUP:
 				upgrade_done = False
-				if ruta[0] > 16: # panel
+				if ruta[0] > 16 or ruta[1] > 10: # panel
 					if ruta in buttons:
 						select_tower(*buttons[ruta])
 				else:
@@ -490,7 +492,9 @@ def main(flags):
 			elif event.type == MOUSEMOTION:
 				ruta = int(event.pos[0] / 64), int(event.pos[1] / 64)
 				hilight_box._pos = (ruta[0] * 64 + 32, ruta[1] * 64 + 32)
-				if ruta[0] > 16: # panel
+				if ruta[0] > 16 or ruta[1] > 10: # panel
+					if ruta not in buttons:
+						hilight_box._pos = (10000, 0)
 					mouse._pos = (10000, 0)
 				else:
 					x, y = ruta[0] * 64 + 32, ruta[1] * 64 + 32
