@@ -14,14 +14,14 @@ speed = 60
 collcmp = pygame.sprite.collide_mask
 _images = {}
 
-def imgload(names):
+def imgload(names, step=1):
 	for name in names:
 		if name not in _images:
 			img = pygame.image.load(name).convert_alpha()
 			def rot(deg):
 				i = pygame.transform.rotate(img, deg)
 				return i, pygame.mask.from_surface(i)
-			_images[name] = dict([(deg, rot(deg)) for deg in range(0, 360)])
+			_images[name] = dict([(deg, rot(deg)) for deg in range(0, 360, step or 360)])
 	return [_images[name] for name in names]
 
 _lifeimgs = []
@@ -395,27 +395,24 @@ def main(flags):
 	things = [enemies, towers, projectiles, bars, pygame.sprite.RenderClear([hilight_box])]
 	loading(3)
 
-	imgload(("agurk.png", "carrot.png", "box.png"))
-	imgload(("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png"))
-	imgload(("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png"))
-	imgload(("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png"))
-	imgload(("pringles_1.png", "pringles_2.png", "pringles_3.png"))
+	imgload(("carrot.png",))
+	imgload(("agurk.png", "box.png"), 0)
+	imgload(("hat.png", "hat_krisseh_full.png", "hat_krisseh_half.png"), 0)
+	imgload(("superhat.png", "superkrisseh_full.png", "superkrisseh_half.png"), 0)
+	imgload(("exttower_1.png", "exttower_2.png", "exttower_3.png", "exttower_4.png"), 0)
+	imgload(("pringles_1.png", "pringles_2.png", "pringles_3.png"), 0)
 	loading(4)
 	colours = ["red", "green", "blue", "black"]
-	imgload(["saw_" + c + "_1.png" for c in colours])
-	imgload(["saw_" + c + "_2.png" for c in colours])
-	imgload(["ext_" + str(i) + ".png" for i in range(1, 5)])
+	imgload(["saw_" + c + "_1.png" for c in colours], 90)
+	imgload(["saw_" + c + "_2.png" for c in colours], 90)
+	imgload(["ext_" + str(i) + ".png" for i in range(1, 5)], 90)
 	font = pygame.font.SysFont("Verdana", 16, True)
 
 	# Fix Krisseh collisions
-	full = _images["hat_krisseh_full.png"]
-	half = _images["hat_krisseh_half.png"]
-	for i in range(360):
-		full[i] = (full[i][0], half[i][1])
-	full = _images["superkrisseh_full.png"]
-	half = _images["superkrisseh_half.png"]
-	for i in range(360):
-		full[i] = (full[i][0], half[i][1])
+	for bn in ("hat_krisseh", "superkrisseh"):
+		full = _images[bn + "_full.png"]
+		half = _images[bn + "_half.png"]
+		full[0] = (full[0][0], half[0][1])
 
 	knapps = []
 	for y, fn in ((336, "hat.png"), (400, "superhat.png"), (480, "exttower_1.png"), (544, "pringles_1.png"), (608, "agurk.png")):
