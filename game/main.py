@@ -302,31 +302,33 @@ spawned_on_this_level = 0
 def spawn():
 	global level, spawned_on_this_level, spawn_countdown
 	spawns = [(Chainsaw, 3, "green", 3),
-	          (Chainsaw, 5, "blue", 4),
-	          (Chainsaw, 7, "red", 5),
+	          (Chainsaw, 6, "blue", 5),
+	          (Chainsaw, 6, "red", 7),
 	          (Ext, 1, "pink", 36),
-	          (Chainsaw, 7, "blue", 7),
-	          (Chainsaw, 4, "red", 10),
-	          (SmartChainsaw, 1, "black", 23),
-	          (Chainsaw, 5, "pink", 14),
-	          (Chainsaw, 8, "green", 17),
+	          (Chainsaw, 6, "blue", 10),
+	          (Chainsaw, 6, "red", 14),
+	          (SmartChainsaw, 1, "black", 24),
+	          (Chainsaw, 6, "pink", 20),
+	          (Chainsaw, 12, "green", 20),
+	          (SmartChainsaw, 3, "black", 24),
 	          (Ext, 1, "pink", 360),
-	          (Chainsaw, 7, "blue", 20),
-	          (Chainsaw, 4, "red", 24),
-	          (SmartChainsaw, 2, "black", 33),
+	          (Chainsaw, 6, "blue", 30),
+	          (Chainsaw, 4, "red", 38),
+	          (SmartChainsaw, 2, "black", 44),
+	          (Chainsaw, 6, "blue", 50),
 	         ]
 
 	if level < len(spawns):
 		enemy, count, colour, life = spawns[level]
 	else:
-		enemy, count, colour, life = Chainsaw, 6, "pink", level*2
+		enemy, count, colour, life = SmartChainsaw, 3 + level*0.1, "pink", level*4
 	spawned_on_this_level += 1
 	enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
 	if spawned_on_this_level >= count:
 		level += 1
 		spawned_on_this_level = 0
-		spawn_countdown = 600
+		spawn_countdown = 400 - level*10
 
 def game_over():
 	global going
@@ -442,7 +444,7 @@ def main(flags):
 		clock.tick(speed)
 		spawn_countdown -= 1
 		if spawn_countdown <= 0:
-			spawn_countdown = 30
+			spawn_countdown = 30 - level/2
 			spawn()
 
 		# Money must be funny
