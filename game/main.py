@@ -328,7 +328,7 @@ def spawn():
 	if spawned_on_this_level >= count:
 		level += 1
 		spawned_on_this_level = 0
-		spawn_countdown = 400 - level*10
+		spawn_countdown = max(400 - level*10, 0)
 
 def game_over():
 	global going
@@ -444,7 +444,7 @@ def main(flags):
 		clock.tick(speed)
 		spawn_countdown -= 1
 		if spawn_countdown <= 0:
-			spawn_countdown = 30 - level/2
+			spawn_countdown = max(30 - level/2, 0)
 			spawn()
 
 		# Money must be funny
