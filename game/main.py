@@ -9,6 +9,8 @@ from time import sleep
 
 WIDTH, HEIGHT = 1280, 720 # damn projector
 SCALE = 32
+SCALE2 = (SCALE, SCALE)
+MIDDLE = (SCALE // 2 - 1, SCALE // 2 - 1)
 speed = 60
 
 collcmp = pygame.sprite.collide_mask
@@ -54,7 +56,7 @@ class Sprite(pygame.sprite.Sprite):
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
 		m = map(mul, move1, map(add, z, (1, 1)))
-		c = background0.get_at(map(int, map(div, map(add, self._pos, m), (SCALE, SCALE))))
+		c = background0.get_at(map(int, map(div, map(add, self._pos, m), SCALE2)))
 		return c[0] == 255
 	def _pathify(self, z):
 		pass
@@ -182,7 +184,7 @@ class Enemy(Sprite):
 			snd.play()
 	def update(self):
 		Sprite.update(self)
-		c = background0.get_at(map(int, map(div, self._pos, (SCALE, SCALE))))
+		c = background0.get_at(map(int, map(div, self._pos, SCALE2)))
 		if c[0] == 255 and c[1] == 0:
 			lose_life()
 			self.kill()
@@ -219,27 +221,29 @@ class SmartChainsaw(Chainsaw):
 	_bounty = 15
 	def __init__(self, *a):
 		Chainsaw.__init__(self, *a, flashy=True)
-		self._choices = [2, 2, 2, 1, 2]
-		self._wait = 0
-		self._soon = 0
+		speed = max(map(abs, self._move))
+		self._speed = (speed, speed)
+	def __good(self, x, y):
+		if x <= 33 and y <= 21 and x >= 0 and y >= 0 and self.__map[x][y]:
+			self.__map[x][y] = False
+			return True
+	def __path(self, xy):
+		c = background0.get_at(xy)
+		if c[0] == 255: # road
+			if c[1] == 0: # goal area
+				return True
+			else:
+				for m in (-1, 0), (0, 1), (1, 0), (0, -1):
+					pos = map(add, xy, m)
+					if self.__good(*pos) and self.__path(pos):
+						return m
 	def _pathify(self, z):
-		move = self._move
-		sign = 1
-		can = []
-		while len(can) < 3:
-			can.append((self._can_move(z, move), move))
-			move = self._move[1] * sign, self._move[0] * sign
-			sign = -sign
-		self._wait -= 1
-		self._soon -= 1
-		if self._soon == 0:
-			self._move = can[self._choices.pop()][1]
-			self._wait = 10
-		elif self._wait <= 0 and self._soon < 0 and [c[0] for c in can] == [True, True, True]:
-			self._soon = 4
-		else:
-			self._move = [c[1] for c in can if c[0]][0]
-		self._setrot()
+		x, y = map(div, self._pos, SCALE2)
+		if self._pos == map(add, map(mul, (x, y), SCALE2), MIDDLE):
+			self.__map = [[True] * 22 for i in range(34)]
+			self.__map[x][y] = False
+			self._move = map(mul, self.__path([x, y]), self._speed)
+			self._setrot()
 
 class Weapon(Sprite):
 	_damage = 1
@@ -384,7 +388,7 @@ def main(flags):
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 	background0 = pygame.image.load("map1.png").convert_alpha()
-	background = pygame.transform.scale(background0, map(mul, background0.get_size(), (SCALE, SCALE)))
+	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
 	panel = pygame.image.load("panel.png").convert_alpha()
 	loading(2)
 
