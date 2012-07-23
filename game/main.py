@@ -217,32 +217,39 @@ class Ext(Enemy):
 		Enemy.__init__(self, ["ext_" + str(n) + ".png" for n in 1,2,3,4,3,2], x, y, [mx, my])
 		self._life = self._max_life = life
 
-class SmartChainsaw(Chainsaw):
-	_bounty = 15
-	def __init__(self, *a):
-		Chainsaw.__init__(self, *a, flashy=True)
-		speed = max(map(abs, self._move))
-		self._speed = (speed, speed)
-	def __good(self, x, y):
-		if x <= 33 and y <= 21 and x >= 0 and y >= 0 and self.__map[x][y]:
-			self.__map[x][y] = False
+def build_path(level, start_pos):
+	"""Builds path[x][y] => movement for shortest route from start_pos to red"""
+	path = [[False] * 22 for i in range(34)]
+	test = [[True] * 22 for i in range(34)]
+	test[start_pos[0]][start_pos[1]] = False
+	def good(x, y):
+		if x <= 33 and y <= 21 and x >= 0 and y >= 0 and test[x][y]:
+			test[x][y] = False
 			return True
-	def __path(self, xy):
-		c = background0.get_at(xy)
+	def check(xy):
+		c = level.get_at(xy)
 		if c[0] == 255: # road
 			if c[1] == 0: # goal area
 				return True
 			else:
 				for m in (-1, 0), (0, 1), (1, 0), (0, -1):
 					pos = map(add, xy, m)
-					if self.__good(*pos) and self.__path(pos):
-						return m
+					if good(*pos) and check(pos):
+						path[xy[0]][xy[1]] = m
+						return True
+	check(start_pos)
+	return path
+
+class SmartChainsaw(Chainsaw):
+	_bounty = 15
+	def __init__(self, *a):
+		Chainsaw.__init__(self, *a, flashy=True)
+		speed = max(map(abs, self._move))
+		self._speed = (speed, speed)
 	def _pathify(self, z):
 		x, y = map(div, self._pos, SCALE2)
 		if self._pos == map(add, map(mul, (x, y), SCALE2), MIDDLE):
-			self.__map = [[True] * 22 for i in range(34)]
-			self.__map[x][y] = False
-			self._move = map(mul, self.__path([x, y]), self._speed)
+			self._move = map(mul, level_path[x][y], self._speed)
 			self._setrot()
 
 class Weapon(Sprite):
@@ -367,7 +374,7 @@ def select_tower(what, img):
 
 def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse, level_path
 	global _snd_death, _snd_blurgh
 	pygame.display.init()
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
@@ -388,6 +395,7 @@ def main(flags):
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 	background0 = pygame.image.load("map1.png").convert_alpha()
+	level_path = build_path(background0, [32, 2])
 	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
 	panel = pygame.image.load("panel.png").convert_alpha()
 	loading(2)
