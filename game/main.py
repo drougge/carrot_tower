@@ -193,9 +193,12 @@ class Enemy(Sprite):
 		global money, _snd_carrot
 		self._life -= p._damage
 		if self._life <= 0:
-			money += int(self._bounty * level * 0.5)
+			money += self.bounty(self._bounty)
 			snd.play()
 			self.kill()
+	@staticmethod
+	def bounty(bounty):
+		return int(bounty * level * 0.5)
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, SCALE2)))
@@ -246,8 +249,8 @@ class Dammsugare(Enemy):
 class Ext(Enemy):
 	_animate = 2
 	_bounty = 50
-	def __init__(self, x, y, colour, life, mx, my):
-		Enemy.__init__(self, ["ext_" + str(n) + ".png" for n in 1,2,3,4,3,2], x, y, [mx, my])
+	def __init__(self, x, y, colour, life, mx, my, **kw):
+		Enemy.__init__(self, ["ext_" + str(n) + ".png" for n in 1,2,3,4,3,2], x, y, [mx, my], **kw)
 		self._life = self._max_life = life
 
 def build_path(level, start_pos):
@@ -276,8 +279,8 @@ def build_path(level, start_pos):
 
 class SmartChainsaw(Chainsaw):
 	_bounty = 15
-	def __init__(self, *a):
-		Chainsaw.__init__(self, *a, flashy=True)
+	def __init__(self, *a, **kw):
+		Chainsaw.__init__(self, *a, flashy=True, **kw)
 		speed = max(map(abs, self._move))
 		self._speed = (speed, speed)
 	def _pathify(self, z):
@@ -337,7 +340,7 @@ def upgrade(tower, what_to_build):
 
 def lose_life():
 	global lives, going, _snd_death
-	print "DEATH!!!"
+	print u"OND BRÅD DØD!!!"
 	lives -= 1
 	_snd_death.play()
 	if lives < 1:
@@ -400,7 +403,7 @@ spawns = [[(Chainsaw, 3, "green"     , 3 , spawn_points[0][0], 30, 300),
 
 spawned_on_this_level = 0
 def spawn():
-	global level, spawned_on_this_level, spawn_countdown, mapno
+	global level, spawned_on_this_level, spawn_countdown, mapno, status_bar
 
 	if level < len(spawns[mapno]):
 		s = spawns[mapno][level]
@@ -413,11 +416,22 @@ def spawn():
 	enemies.add(enemy(spawn_point[0]*32+15, spawn_point[1]*32+15, colour, life, *spawn_point[2], **d))
 
 	spawn_countdown = countdown_individual
+	bounty = d.get("bounty", enemy._bounty)
+	status_bar = u"Denna tråpp: %s %s, antal: %d, kroppspoenger: %d, skuddpremie: %d, utspyttade: %d av %d" % (colour, enemy.__name__, count, life, enemy.bounty(bounty), spawned_on_this_level, count)
 
 	if spawned_on_this_level >= count:
 		level += 1
 		spawned_on_this_level = 0
 		spawn_countdown = countdown_group
+		
+		if level >= len(spawns[mapno]):
+			status_bar = u"Denna bananas slutgiltiga tråpp ær utspydd. Assassinera de resterande ondingarna før att avancera dig till næsta elændiga strid."
+		else:
+			s = spawns[mapno][level]
+			n_enemy, n_count, n_colour, n_life = s[:4]
+			d = s[7] if len(s) > 7 else {}
+			n_bounty = d.get("bounty", n_enemy._bounty)
+			status_bar = u"Nesta tråpp: %s %s, antal: %d, kroppspoenger: %d, skuddpremie: %d" % (n_colour, n_enemy.__name__, n_count, n_life, n_enemy.bounty(n_bounty))
 
 def game_over():
 	global going
@@ -431,7 +445,7 @@ def game_over():
 def win():
 	global going
 	font = pygame.font.SysFont("Verdana", 64, True)
-	text = ["YOU HAVE", "DESTROYED", "EVERYTHING!!!!1"]
+	text = ["DU HAR", "DESTRUERAT", u"VÄRLDSALLTET!!!!1"]
 	[screen.blit(r, (1280/2 - r.get_size()[0]/2, 720/2 - (1 - y) * r.get_size()[1])) \
 	 for y, r in enumerate([font.render(t, True, (0, 0, 0)) for t in text])]
 	pygame.display.flip()
@@ -460,7 +474,7 @@ def select_tower(what, img):
 	mouse._imgs = imgload([img])
 
 def load_map(blit=True):
-	global background0, level_path, background, panel
+	global background0, level_path, background, panel, status_bar
 	print "Laddar karta " + str(mapno)
 	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
 	level_path = build_path(background0, spawn_points[mapno])
@@ -472,23 +486,30 @@ def load_map(blit=True):
 		font = pygame.font.SysFont("Verdana", 64, True)
 		game_over_render = font.render(u"Stridsfält "+str(mapno+1), True, (0,0,0))
 		screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
+		status_bar = u"Ruskande ovælkommen skall du kænna dig till stridsfælt %d! Nu skall du i Norge dø!!" % (mapno+1)
+		font = pygame.font.SysFont("Courier", 14, True)
+		status_bar_render = font.render(status_bar, False, (0,0,0))
+		screen.blit(status_bar_background, (0, 720-16))
+		screen.blit(status_bar_render, (2, (720-16)))
 		pygame.display.flip()
 		sleep(1)
 		screen.blit(background, (0, 0))
 
 def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse, level_path, mapno
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse, level_path, mapno, status_bar, status_bar_background, version
+	version = "0,2 (rova)"
 	global _snd_death, _snd_blurgh
 	pygame.display.init()
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
-	pygame.display.set_caption("Carrot Tower (with some Rajula)")
+	pygame.display.set_caption("Carrot Tower (med viss Rajula), version %s" % version)
+	status_bar = "The vacuum cleaner is a lie"
 
 	pygame.font.init()
 	clock = pygame.time.Clock()
 
 	font = pygame.font.SysFont("Verdana", 128, True)
-	loading_text = font.render("Loading", True, (0,0,0))
+	loading_text = font.render("Mediterar", True, (0,0,0))
 	loading(1)
 
 	pygame.mixer.init(44100, -16, 2, 2048)
@@ -555,6 +576,9 @@ def main(flags):
 	screen.blit(panel, (1088, 0))
 	pygame.display.flip()
 
+	status_bar_background = pygame.Surface((1087, 16))
+	status_bar_background.fill((255, 0, 228))
+
 	while going and lives > 0:
 		clock.tick(speed)
 		spawn_countdown -= 1
@@ -566,12 +590,16 @@ def main(flags):
 		lives_render = font.render(str(lives), True, (0,0,0))
 		level_render = font.render(str(level), True, (0,0,0))
 		next_render = font.render(str(spawn_countdown), True, (0,0,0))
+		font = pygame.font.SysFont("Courier", 14, True)
+		status_bar_render = font.render(status_bar, False, (0,0,0))
+		font = pygame.font.SysFont("Verdana", 16, True)
 		screen.blit(panel, (1088, 0))
+		screen.blit(status_bar_background, (0, 720-16))
 		screen.blit(money_render, (1280-16-money_render.get_size()[0], 7))
 		screen.blit(lives_render, (1280-16-lives_render.get_size()[0], 35))
 		screen.blit(level_render, (1280-16-level_render.get_size()[0], 35+28))
 		screen.blit(next_render, (1280-16-next_render.get_size()[0], 35+28+28))
-		#screen.blit(lives_render, (1110, 25))
+		screen.blit(status_bar_render, (2, (720-16)))
 
 		for thing in things:
 			thing.update()
