@@ -17,7 +17,7 @@ collcmp = pygame.sprite.collide_mask
 _images = {}
 
 number_of_maps = 2
-spawn_points = [[32, 2], [2, 21]]
+spawn_points = [[32, 2, [-4, 0]], [2, 2, [4, 0]]]
 
 def imgload(names, step=1):
 	for name in names:
@@ -363,7 +363,7 @@ def spawn():
 	spawned_on_this_level += 1
 	#enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
-	enemies.add(enemy(spawn_points[mapno][0]*32, spawn_points[mapno][1]*32, colour, life, -4, 0))
+	enemies.add(enemy(spawn_points[mapno][0]*32, spawn_points[mapno][1]*32, colour, life, *spawn_points[mapno][2]))
 
 	if spawned_on_this_level >= count:
 		level += 1
@@ -404,7 +404,7 @@ def load_map():
 	global background0, level_path, background, panel
 	print "Laddar karta " + str(mapno)
 	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
-	level_path = build_path(background0, spawn_points[mapno])
+	level_path = build_path(background0, spawn_points[mapno][:2])
 	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
 	panel = pygame.image.load("panel.png").convert_alpha()
 	screen.blit(background, (0, 0))
