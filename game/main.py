@@ -185,7 +185,7 @@ class Enemy(Sprite):
 	_bounty = 0
 	_turning_bias = 1
 	def __init__(self, *a, **kw):
-		Sprite.__init__(self, *a[:4])
+		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 		self._turning_bias = kw.get("bias", 1)
 	def im_hit(self, p, snd):
@@ -226,20 +226,20 @@ class Enemy(Sprite):
 class Chainsaw(Enemy):
 	_animate = 2
 	_bounty = 5
-	def __init__(self, x, y, colour, life, mx, my, flashy=False, bias=1):
+	def __init__(self, x, y, colour, life, mx, my, flashy=False, **kw):
 		if flashy:
 			imgs = []
 			for colour in ["red", "black", "green", "blue"]:
 				imgs += ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2] * 2
 		else:
 			imgs = ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2]
-		Enemy.__init__(self, imgs, x, y, [mx, my], {"bias": bias})
+		Enemy.__init__(self, imgs, x, y, [mx, my], **kw)
 		self._life = self._max_life = life
 
 class Dammsugare(Enemy):
 	_bounty = 300
-	def __init__(self, x, y, colour, life, mx, my, bias=1):
-		Enemy.__init__(self, ["dammsugare.png",], x, y, [mx, my], {"bias": bias})
+	def __init__(self, x, y, colour, life, mx, my, **kw):
+		Enemy.__init__(self, ["dammsugare.png",], x, y, [mx, my], **kw)
 		self._life = self._max_life = life
 
 class Ext(Enemy):
