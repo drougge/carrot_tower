@@ -214,10 +214,8 @@ class Enemy(Sprite):
 			level = 0
 			spawned_on_this_level = 0
 			spawn_countdown = 600
-			for t in towers:
-				t.kill()
-			for p in projectiles:
-				p.kill()
+			for o in list(towers) + list(projectiles):
+				o.kill()
 
 class Chainsaw(Enemy):
 	_animate = 2
