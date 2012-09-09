@@ -188,6 +188,7 @@ class Enemy(Sprite):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
 		self._turning_bias = kw.get("bias", 1)
+		self._bounty = kw.get("bounty", self._bounty)
 	def im_hit(self, p, snd):
 		global money, _snd_carrot
 		self._life -= p._damage
@@ -352,7 +353,7 @@ spawns = [[(Chainsaw, 3, "green"     , 3 , spawn_points[0][0], 30, 300),
            (Chainsaw, 6, "pink"      , 20, spawn_points[0][0], 30, 300),
            (Chainsaw, 12, "green"    , 20, spawn_points[0][0], 30, 300),
            (SmartChainsaw, 3, "black", 24, spawn_points[0][0], 30, 300),
-           (Ext,      1, "pink"      , 360,spawn_points[0][0], 30, 300),
+           (Ext,      1, "pink"      , 360,spawn_points[0][0], 30, 300, {"bounty": 1000}),
            (Chainsaw, 6, "blue"      , 30, spawn_points[0][0], 30, 300),
            (Chainsaw, 4, "red"       , 38, spawn_points[0][0], 30, 300),
            (SmartChainsaw, 2, "black", 44, spawn_points[0][0], 30, 300),
