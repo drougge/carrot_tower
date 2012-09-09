@@ -17,7 +17,7 @@ collcmp = pygame.sprite.collide_mask
 _images = {}
 
 number_of_maps = 4
-spawn_points = [[32, 2, [-4, 0]], [2, 2, [4, 0]], [2, 6, [4, 0]], [2, 21, [0, -4]]]
+spawn_points = [[[32, 2, [-4, 0]]], [[2, 2, [4, 0]]], [[2, 6, [4, 0]]], [[2, 21, [0, -4]], [31, 21, [0, -4]]]]
 
 def imgload(names, step=1):
 	for name in names:
@@ -245,7 +245,6 @@ def build_path(level, start_pos):
 	"""Builds path[x][y] => movement for shortest route from start_pos to red"""
 	path = [[False] * 22 for i in range(34)]
 	test = [[True] * 22 for i in range(34)]
-	test[start_pos[0]][start_pos[1]] = False
 	def good(x, y):
 		if x <= 33 and y <= 21 and x >= 0 and y >= 0 and test[x][y]:
 			test[x][y] = False
@@ -261,7 +260,9 @@ def build_path(level, start_pos):
 					if good(*pos) and check(pos):
 						path[xy[0]][xy[1]] = m
 						return True
-	check(start_pos)
+	for p in start_pos:
+		test[p[0]][p[1]] = False
+		check(p[:2])
 	return path
 
 class SmartChainsaw(Chainsaw):
@@ -333,19 +334,19 @@ def lose_life():
 	if lives < 1:
 		game_over()
 
-spawns = [[(Chainsaw, 3, "green", 3),
-           (Chainsaw, 6, "blue", 5),
+spawns = [[(Chainsaw, 3, "green", 3, spawn_points[0][0]),
+           (Chainsaw, 6, "blue", 5, spawn_points[0][0]),
           ],
-          [(Chainsaw, 3, "blue", 3),
+          [(Chainsaw, 3, "blue", 3, spawn_points[1][0]),
           ],
-          [(Chainsaw, 13, "blue", 3),
-           (SmartChainsaw, 3, "black", 24),
+          [(Chainsaw, 13, "blue", 3, spawn_points[2][0]),
+           (SmartChainsaw, 3, "black", 24, spawn_points[2][0]),
           ],
-          [(Chainsaw, 3, "blue", 3, {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, {"bias": -1}),
+          [(Chainsaw, 3, "blue", 3, spawn_points[3][0], {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][0], {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
           ],
          ]
 #
@@ -373,14 +374,13 @@ def spawn():
 
 	if level < len(spawns[mapno]):
 		s = spawns[mapno][level]
-		enemy, count, colour, life = s[:4]
-		d = s[4] if len(s) > 4 else {}
+		enemy, count, colour, life, spawn_point = s[:5]
+		d = s[5] if len(s) > 5 else {}
 	else:
 		return
 	spawned_on_this_level += 1
-	#enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
-	enemies.add(enemy(spawn_points[mapno][0]*32+15, spawn_points[mapno][1]*32+15, colour, life, *spawn_points[mapno][2], **d))
+	enemies.add(enemy(spawn_point[0]*32+15, spawn_point[1]*32+15, colour, life, *spawn_point[2], **d))
 
 	if spawned_on_this_level >= count:
 		level += 1
@@ -398,7 +398,6 @@ def game_over():
 	
 
 def loading(nr):
-	return
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
 	zx, zy = loading_text.get_size()
 	screen.blit(loading_text, (1200 - zx, 700 - zy))
@@ -422,7 +421,7 @@ def load_map():
 	global background0, level_path, background, panel
 	print "Laddar karta " + str(mapno)
 	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
-	level_path = build_path(background0, spawn_points[mapno][:2])
+	level_path = build_path(background0, spawn_points[mapno])
 	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
 	panel = pygame.image.load("panel.png").convert_alpha()
 	screen.blit(background, (0, 0))
@@ -456,7 +455,7 @@ def main(flags):
 	_snd_carrot = pygame.mixer.Sound("carrot.wav")
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
-	mapno = 2
+	mapno = 0
 	load_map()
 	loading(2)
 
