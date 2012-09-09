@@ -417,7 +417,7 @@ def select_tower(what, img):
 	what_to_build = what
 	mouse._imgs = imgload([img])
 
-def load_map():
+def load_map(blit=True):
 	global background0, level_path, background, panel
 	print "Laddar karta " + str(mapno)
 	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
@@ -426,12 +426,13 @@ def load_map():
 	panel = pygame.image.load("panel.png").convert_alpha()
 	screen.blit(background, (0, 0))
 
-	font = pygame.font.SysFont("Verdana", 64, True)
-	game_over_render = font.render(u"Stridsfält "+str(mapno), True, (0,0,0))
-	screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
-	pygame.display.flip()
-	sleep(1)
-	screen.blit(background, (0, 0))
+	if blit:
+		font = pygame.font.SysFont("Verdana", 64, True)
+		game_over_render = font.render(u"Stridsfält "+str(mapno+1), True, (0,0,0))
+		screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
+		pygame.display.flip()
+		sleep(1)
+		screen.blit(background, (0, 0))
 
 def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
@@ -456,7 +457,7 @@ def main(flags):
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
 	mapno = 0
-	load_map()
+	load_map(False)
 	loading(2)
 
 	going = True
