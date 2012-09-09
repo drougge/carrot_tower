@@ -16,8 +16,8 @@ speed = 60
 collcmp = pygame.sprite.collide_mask
 _images = {}
 
-number_of_maps = 2
-spawn_points = [[32, 2, [-4, 0]], [2, 2, [4, 0]]]
+number_of_maps = 4
+spawn_points = [[32, 2, [-4, 0]], [2, 2, [4, 0]], [2, 6, [4, 0]], [2, 21, [0, -4]]]
 
 def imgload(names, step=1):
 	for name in names:
@@ -59,7 +59,10 @@ class Sprite(pygame.sprite.Sprite):
 	def _can_move(self, z, move):
 		move1 = [cmp(m, 0) for m in move]
 		m = map(mul, move1, map(add, z, (1, 1)))
-		c = background0.get_at(map(int, map(div, map(add, self._pos, m), SCALE2)))
+		try:
+			c = background0.get_at(map(int, map(div, map(add, self._pos, m), SCALE2)))
+		except IndexError:
+			return False
 		return c[0] == 255
 	def _pathify(self, z):
 		pass
@@ -175,6 +178,7 @@ class Enemy(Sprite):
 	_life = 1
 	_max_life = 1
 	_bounty = 0
+	_turning_bias = 1
 	def __init__(self, *a):
 		Sprite.__init__(self, *a)
 		bars.add(Life(self))
@@ -192,7 +196,7 @@ class Enemy(Sprite):
 			lose_life()
 			self.kill()
 	def _pathify(self, z):
-		sign = 1
+		sign = self._turning_bias
 		move = self._move
 		while not self._can_move(z, move):
 			move = self._move[1] * sign, self._move[0] * sign
@@ -219,7 +223,7 @@ class Enemy(Sprite):
 class Chainsaw(Enemy):
 	_animate = 2
 	_bounty = 5
-	def __init__(self, x, y, colour, life, mx, my, flashy=False):
+	def __init__(self, x, y, colour, life, mx, my, flashy=False, bias=1):
 		if flashy:
 			imgs = []
 			for colour in ["red", "black", "green", "blue"]:
@@ -228,6 +232,7 @@ class Chainsaw(Enemy):
 			imgs = ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2]
 		Enemy.__init__(self, imgs, x, y, [mx, my])
 		self._life = self._max_life = life
+		self._turning_bias = bias
 
 class Ext(Enemy):
 	_animate = 2
@@ -330,8 +335,18 @@ def lose_life():
 
 spawns = [[(Chainsaw, 3, "green", 3),
            (Chainsaw, 6, "blue", 5),
-					],
-          [(Chainsaw, 3, "blue", 3)]
+          ],
+          [(Chainsaw, 3, "blue", 3),
+          ],
+          [(Chainsaw, 13, "blue", 3),
+           (SmartChainsaw, 3, "black", 24),
+          ],
+          [(Chainsaw, 3, "blue", 3, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, {"bias": -1}),
+          ],
          ]
 #
 #           (Chainsaw, 6, "red", 7),
@@ -357,13 +372,15 @@ def spawn():
 	global level, spawned_on_this_level, spawn_countdown, mapno
 
 	if level < len(spawns[mapno]):
-		enemy, count, colour, life = spawns[mapno][level]
+		s = spawns[mapno][level]
+		enemy, count, colour, life = s[:4]
+		d = s[4] if len(s) > 4 else {}
 	else:
 		return
 	spawned_on_this_level += 1
 	#enemies.add(enemy(1071, 79, colour, life, -4, 0))
 
-	enemies.add(enemy(spawn_points[mapno][0]*32, spawn_points[mapno][1]*32, colour, life, *spawn_points[mapno][2]))
+	enemies.add(enemy(spawn_points[mapno][0]*32+15, spawn_points[mapno][1]*32+15, colour, life, *spawn_points[mapno][2], **d))
 
 	if spawned_on_this_level >= count:
 		level += 1
@@ -381,6 +398,7 @@ def game_over():
 	
 
 def loading(nr):
+	return
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
 	zx, zy = loading_text.get_size()
 	screen.blit(loading_text, (1200 - zx, 700 - zy))
@@ -409,8 +427,8 @@ def load_map():
 	panel = pygame.image.load("panel.png").convert_alpha()
 	screen.blit(background, (0, 0))
 
-	font = pygame.font.SysFont("Verdana", 128, True)
-	game_over_render = font.render("BANANANA "+str(mapno), True, (0,0,0))
+	font = pygame.font.SysFont("Verdana", 64, True)
+	game_over_render = font.render(u"Stridsfält "+str(mapno), True, (0,0,0))
 	screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
 	pygame.display.flip()
 	sleep(1)
@@ -438,11 +456,8 @@ def main(flags):
 	_snd_carrot = pygame.mixer.Sound("carrot.wav")
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
-	mapno = 0
-	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
-	level_path = build_path(background0, [32, 2])
-	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
-	panel = pygame.image.load("panel.png").convert_alpha()
+	mapno = 2
+	load_map()
 	loading(2)
 
 	going = True
