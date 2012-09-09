@@ -17,7 +17,12 @@ collcmp = pygame.sprite.collide_mask
 _images = {}
 
 number_of_maps = 4
-spawn_points = [[[32, 2, [-4, 0]]], [[2, 2, [4, 0]]], [[2, 6, [4, 0]]], [[2, 21, [0, -4]], [31, 21, [0, -4]]]]
+spawn_points = [ \
+	[[32, 2, [-4, 0]]], 
+	[[2, 2, [4, 0]]], 
+	[[2, 6, [4, 0]], [30, 6, [0, 4]]],
+	[[2, 21, [0, -4]], [31, 21, [0, -4]]] \
+	]
 
 def imgload(names, step=1):
 	for name in names:
@@ -179,9 +184,10 @@ class Enemy(Sprite):
 	_max_life = 1
 	_bounty = 0
 	_turning_bias = 1
-	def __init__(self, *a):
-		Sprite.__init__(self, *a)
+	def __init__(self, *a, **kw):
+		Sprite.__init__(self, *a[:4])
 		bars.add(Life(self))
+		self._turning_bias = kw.get("bias", 1)
 	def im_hit(self, p, snd):
 		global money, _snd_carrot
 		self._life -= p._damage
@@ -227,9 +233,14 @@ class Chainsaw(Enemy):
 				imgs += ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2] * 2
 		else:
 			imgs = ["saw_" + colour + "_" + str(n) + ".png" for n in 1, 2]
-		Enemy.__init__(self, imgs, x, y, [mx, my])
+		Enemy.__init__(self, imgs, x, y, [mx, my], {"bias": bias})
 		self._life = self._max_life = life
-		self._turning_bias = bias
+
+class Dammsugare(Enemy):
+	_bounty = 300
+	def __init__(self, x, y, colour, life, mx, my, bias=1):
+		Enemy.__init__(self, ["dammsugare.png",], x, y, [mx, my], {"bias": bias})
+		self._life = self._max_life = life
 
 class Ext(Enemy):
 	_animate = 2
