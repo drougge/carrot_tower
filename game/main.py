@@ -209,8 +209,7 @@ class Enemy(Sprite):
 		if level >= len(spawns[mapno]) and len(enemies) == 0:
 			mapno += 1
 			if mapno == number_of_maps:
-				print "ZOMFGLOLCOPTER! You can haz the holy giffel!"
-				exit()
+				win()
 			load_map()
 			level = 0
 			spawned_on_this_level = 0
@@ -396,6 +395,16 @@ def game_over():
 	sleep(3)
 	going = False
 	
+def win():
+	global going
+	font = pygame.font.SysFont("Verdana", 64, True)
+	text = ["YOU HAVE", "DESTROYED", "EVERYTHING!!!!1"]
+	[screen.blit(r, (1280/2 - r.get_size()[0]/2, 720/2 - (1 - y) * r.get_size()[1])) \
+	 for y, r in enumerate([font.render(t, True, (0, 0, 0)) for t in text])]
+	pygame.display.flip()
+	sleep(3)
+	going = False
+	exit()
 
 def loading(nr):
 	screen.blit(pygame.image.load("load." + str(nr) + ".jpeg"), (0, 0))
