@@ -331,19 +331,20 @@ def lose_life():
 	if lives < 1:
 		game_over()
 
-spawns = [[(Chainsaw, 3, "green", 3, spawn_points[0][0]),
-           (Chainsaw, 6, "blue", 5, spawn_points[0][0]),
+spawns = [[(Chainsaw, 3, "green", 3, spawn_points[0][0], 30, 300),
+           (Chainsaw, 6, "blue", 5, spawn_points[0][0], 30, 30000),
           ],
-          [(Chainsaw, 3, "blue", 3, spawn_points[1][0]),
+          [(Chainsaw, 3, "blue", 3, spawn_points[1][0], 25, 300),
           ],
-          [(Chainsaw, 13, "blue", 3, spawn_points[2][0]),
-           (SmartChainsaw, 3, "black", 24, spawn_points[2][0]),
+          [(Chainsaw, 13, "blue", 3, spawn_points[2][0], 25, 300),
+           (SmartChainsaw, 3, "black", 24, spawn_points[2][0], 25, 300),
           ],
-          [(Chainsaw, 3, "blue", 3, spawn_points[3][0], {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, spawn_points[3][0], {"bias": -1}),
-           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
-           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
-           (Chainsaw, 3, "blue", 3, spawn_points[3][1], {"bias": 1}),
+          [(Chainsaw, 3, "blue", 3, spawn_points[3][0], 25, 300, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][0], 20, 0, {"bias": -1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], 20, 200, {"bias": 1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], 10, 100, {"bias": 1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], 5, 50, {"bias": 1}),
+           (Chainsaw, 3, "blue", 3, spawn_points[3][1], 5, 50, {"bias": 1}),
           ],
          ]
 #
@@ -371,18 +372,20 @@ def spawn():
 
 	if level < len(spawns[mapno]):
 		s = spawns[mapno][level]
-		enemy, count, colour, life, spawn_point = s[:5]
-		d = s[5] if len(s) > 5 else {}
+		enemy, count, colour, life, spawn_point, countdown_individual, countdown_group = s[:7]
+		d = s[7] if len(s) > 7 else {}
 	else:
 		return
 	spawned_on_this_level += 1
 
 	enemies.add(enemy(spawn_point[0]*32+15, spawn_point[1]*32+15, colour, life, *spawn_point[2], **d))
 
+	spawn_countdown = countdown_individual
+
 	if spawned_on_this_level >= count:
 		level += 1
 		spawned_on_this_level = 0
-		spawn_countdown = max(400 - level*10, 0)
+		spawn_countdown = countdown_group
 
 def game_over():
 	global going
@@ -524,7 +527,6 @@ def main(flags):
 		clock.tick(speed)
 		spawn_countdown -= 1
 		if spawn_countdown <= 0:
-			spawn_countdown = max(30 - level/2, 0)
 			spawn()
 
 		# Money must be funny
