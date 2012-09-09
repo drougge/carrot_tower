@@ -16,6 +16,9 @@ speed = 60
 collcmp = pygame.sprite.collide_mask
 _images = {}
 
+number_of_maps = 2
+spawn_points = [[32, 2], [2, 21]]
+
 def imgload(names, step=1):
 	for name in names:
 		if name not in _images:
@@ -179,9 +182,9 @@ class Enemy(Sprite):
 		global money, _snd_carrot
 		self._life -= p._damage
 		if self._life <= 0:
-			self.kill()
 			money += int(self._bounty * level * 0.5)
 			snd.play()
+			self.kill()
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, SCALE2)))
@@ -196,6 +199,22 @@ class Enemy(Sprite):
 			sign = -sign
 		self._move = move
 		self._setrot()
+	def kill(self):
+		Sprite.kill(self)
+		global spawned_on_this_level, level, mapno, spawn_countdown, towers, projectiles
+		if level >= len(spawns[mapno]) and len(enemies) == 0:
+			mapno += 1
+			if mapno == number_of_maps:
+				print "ZOMFGLOLCOPTER! You can haz the holy giffel!"
+				exit()
+			load_map()
+			level = 0
+			spawned_on_this_level = 0
+			spawn_countdown = 600
+			for t in towers:
+				t.kill()
+			for p in projectiles:
+				p.kill()
 
 class Chainsaw(Enemy):
 	_animate = 2
@@ -309,33 +328,42 @@ def lose_life():
 	if lives < 1:
 		game_over()
 
+spawns = [[(Chainsaw, 3, "green", 3),
+           (Chainsaw, 6, "blue", 5),
+					],
+          [(Chainsaw, 3, "blue", 3)]
+         ]
+#
+#           (Chainsaw, 6, "red", 7),
+#           (Ext, 1, "pink", 36),
+#           (Chainsaw, 6, "blue", 10),
+#           (Chainsaw, 6, "red", 14),
+#           (SmartChainsaw, 1, "black", 24),
+#           (Chainsaw, 6, "pink", 20),
+#           (Chainsaw, 12, "green", 20),
+#           (SmartChainsaw, 3, "black", 24),
+#           (Ext, 1, "pink", 360),
+#           (Chainsaw, 6, "blue", 30),
+#           (Chainsaw, 4, "red", 38),
+#           (SmartChainsaw, 2, "black", 44),
+#           (Chainsaw, 6, "blue", 50),
+#          ],
+#          [(Chainsaw, 3, "blue", 3)]
+#         ]
+#
+
 spawned_on_this_level = 0
 def spawn():
-	global level, spawned_on_this_level, spawn_countdown
-	spawns = [(Chainsaw, 3, "green", 3),
-	          (Chainsaw, 6, "blue", 5),
-	          (Chainsaw, 6, "red", 7),
-	          (Ext, 1, "pink", 36),
-	          (Chainsaw, 6, "blue", 10),
-	          (Chainsaw, 6, "red", 14),
-	          (SmartChainsaw, 1, "black", 24),
-	          (Chainsaw, 6, "pink", 20),
-	          (Chainsaw, 12, "green", 20),
-	          (SmartChainsaw, 3, "black", 24),
-	          (Ext, 1, "pink", 360),
-	          (Chainsaw, 6, "blue", 30),
-	          (Chainsaw, 4, "red", 38),
-	          (SmartChainsaw, 2, "black", 44),
-	          (Chainsaw, 6, "blue", 50),
-	         ]
+	global level, spawned_on_this_level, spawn_countdown, mapno
 
-	if level < len(spawns):
-		enemy, count, colour, life = spawns[level]
+	if level < len(spawns[mapno]):
+		enemy, count, colour, life = spawns[mapno][level]
 	else:
-		difficulty = level * (level * 0.4)
-		enemy, count, colour, life = SmartChainsaw, 3 + level*0.1, "pink", difficulty
+		return
 	spawned_on_this_level += 1
-	enemies.add(enemy(1071, 79, colour, life, -4, 0))
+	#enemies.add(enemy(1071, 79, colour, life, -4, 0))
+
+	enemies.add(enemy(spawn_points[mapno][0]*32, spawn_points[mapno][1]*32, colour, life, -4, 0))
 
 	if spawned_on_this_level >= count:
 		level += 1
@@ -372,9 +400,25 @@ def select_tower(what, img):
 	what_to_build = what
 	mouse._imgs = imgload([img])
 
+def load_map():
+	global background0, level_path, background, panel
+	print "Laddar karta " + str(mapno)
+	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
+	level_path = build_path(background0, spawn_points[mapno])
+	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
+	panel = pygame.image.load("panel.png").convert_alpha()
+	screen.blit(background, (0, 0))
+
+	font = pygame.font.SysFont("Verdana", 128, True)
+	game_over_render = font.render("BANANANA "+str(mapno), True, (0,0,0))
+	screen.blit(game_over_render, (1280/2 - game_over_render.get_size()[0]/2, 720/2 - game_over_render.get_size()[1]/2))
+	pygame.display.flip()
+	sleep(1)
+	screen.blit(background, (0, 0))
+
 def main(flags):
 	if not pygame.mixer: print 'Warning, sound disabled'
-	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse, level_path
+	global background, background0, screen, enemies, towers, projectiles, bars, money, lives, going, level, spawn_countdown, loading_text, clock, hilight_box, mouse, level_path, mapno
 	global _snd_death, _snd_blurgh
 	pygame.display.init()
 	screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
@@ -394,7 +438,8 @@ def main(flags):
 	_snd_carrot = pygame.mixer.Sound("carrot.wav")
 	_snd_blurgh = pygame.mixer.Sound("blurgh.wav")
 
-	background0 = pygame.image.load("map1.png").convert_alpha()
+	mapno = 0
+	background0 = pygame.image.load("map" + str(mapno) + ".png").convert_alpha()
 	level_path = build_path(background0, [32, 2])
 	background = pygame.transform.scale(background0, map(mul, background0.get_size(), SCALE2))
 	panel = pygame.image.load("panel.png").convert_alpha()
