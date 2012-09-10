@@ -256,7 +256,6 @@ class Ext(Enemy):
 def build_path(level, start_pos):
 	"""Builds path[x][y] => movement for shortest route from start_pos to red"""
 	path = [[False] * 22 for i in range(34)]
-	test = [[True] * 22 for i in range(34)]
 	def good(x, y):
 		if x <= 33 and y <= 21 and x >= 0 and y >= 0 and test[x][y]:
 			test[x][y] = False
@@ -273,6 +272,7 @@ def build_path(level, start_pos):
 						path[xy[0]][xy[1]] = m
 						return True
 	for p in start_pos:
+		test = [[True] * 22 for i in range(34)]
 		test[p[0]][p[1]] = False
 		check(p[:2])
 	return path
