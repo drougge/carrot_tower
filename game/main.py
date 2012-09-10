@@ -198,7 +198,7 @@ class Enemy(Sprite):
 			self.kill()
 	@staticmethod
 	def bounty(bounty):
-		return int(bounty * level * 0.5)
+		return int(bounty * level * (mapno + 1)*0.69)
 	def update(self):
 		Sprite.update(self)
 		c = background0.get_at(map(int, map(div, self._pos, SCALE2)))
