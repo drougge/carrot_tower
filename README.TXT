@@ -1,4 +1,4 @@
-Carrot Tower (with some Rajula) v0.1
+Carrot Tower (med viss Rajula) v0.2 (rova)
 Created by Sanfred & drougge for NördtroXy II
 Copywrong 2012
 
