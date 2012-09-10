@@ -18,10 +18,10 @@ _images = {}
 
 number_of_maps = 4
 spawn_points = [ \
-	[[32, 2, [-4, 0]]], 
-	[[2, 2, [4, 0]], [30, 0, [0, 4]]], 
+	[[32, 2, [-4, 0]]],
+	[[2, 2, [4, 0]], [30, 0, [0, 4]]],
 	[[2, 6, [4, 0]], [31, 0, [0, 4]]],
-	[[2, 21, [0, -4]], [31, 21, [0, -4]]] \
+	[[2, 21, [0, -4]], [31, 21, [0, -4]]],
 	]
 
 def imgload(names, step=1):
@@ -363,7 +363,7 @@ spawns = [[(Chainsaw, 3, "green"     , 3 , spawn_points[0][0], 30, 300),
            (Chainsaw, 6, "blue"      , 50, spawn_points[0][0], 30, 300),
           ],
           [(Chainsaw, 10, "blue"     , 20, spawn_points[1][0], 25, 300),
-					 (Chainsaw, 4, "green"     , 30, spawn_points[1][0], 25, 300),
+           (Chainsaw, 4, "green"     , 30, spawn_points[1][0], 25, 300),
            (Chainsaw, 4, "blue"      , 34, spawn_points[1][0], 25, 300),
            (Chainsaw, 6, "red"       , 50, spawn_points[1][1], 30, 300),
            (Ext,      1, "pink"      , 360,spawn_points[1][0], 30, 300),
